@@ -1,0 +1,119 @@
+/* GoLobster acknowledgment easter egg. The dialog is injected only on first use. */
+
+.acknowledgment-logo-trigger {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: none;
+  font: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
+  cursor: pointer;
+}
+
+.acknowledgment-logo-trigger:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.acknowledgment-logo-trigger:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.logo-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.logo-modal-overlay.is-active {
+  display: flex;
+}
+
+.logo-modal-overlay.is-visible {
+  opacity: 1;
+}
+
+.logo-modal-dialog {
+  position: relative;
+  width: min(32rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  transform: scale(0.94);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.logo-modal-overlay.is-visible .logo-modal-dialog {
+  transform: scale(1);
+}
+
+.logo-modal-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: calc(100vh - 2rem);
+  object-fit: contain;
+  filter: drop-shadow(0 18px 32px rgba(0, 0, 0, 0.34));
+}
+
+.logo-modal-close {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-heading);
+  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  box-shadow: 0 4px 14px var(--shadow);
+  font: 400 1.65rem/1 'Google Sans', 'Noto Sans', sans-serif;
+  cursor: pointer;
+}
+
+.logo-modal-close:hover {
+  border-color: var(--border-hover);
+  background: var(--bg);
+}
+
+.logo-modal-close:focus-visible {
+  outline: 3px solid var(--link);
+  outline-offset: 3px;
+}
+
+.logo-modal-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-modal-overlay,
+  .logo-modal-dialog {
+    transition: none;
+  }
+}

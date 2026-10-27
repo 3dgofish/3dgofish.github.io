@@ -1,0 +1,704 @@
+/* SpeeDe3DGS — page-specific styles.
+ *
+ * Layout/grid come from the purged Bulma subset (bulma.min.css); icons from
+ * icons.css; the results carousels from slideshow.css; the PDF viewer from
+ * pdf-modal.css. This file holds only what is particular to this page: the
+ * comparison slider, the hero text, and the desktop/mobile equation variants.
+ *
+ * Headings fall back to the self-hosted Noto Sans while Google Sans loads
+ * asynchronously, so the async swap is a font change rather than invisible text.
+ */
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+}
+
+/* ---- Reducing the heading reflow ----
+ *
+ * Google Sans is proprietary, so it cannot be self-hosted and has to arrive from
+ * Google's CDN after first paint. Headings therefore render once in the fallback
+ * and again in Google Sans, and because the two have different metrics the title
+ * re-wrapped — "Pruning" jumped up a line as it swapped.
+ *
+ * This is a metrics-matched fallback: Noto Sans is ~4% wider per character than
+ * Google Sans at the same size, so nudging it down closes most of the gap and the
+ * swap becomes a change of shape rather than a change of layout. Google Sans
+ * itself is unaffected; this face is only ever used while it is in flight.
+ */
+@font-face {
+  font-family: 'Google Sans Fallback';
+  src: local('Noto Sans'), local('Helvetica Neue'), local('Arial');
+  size-adjust: 96%;
+  ascent-override: 95%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+
+/* Keeps a phrase from being split across lines — but only where the phrase can
+   actually fit. Below ~360px a long method name is wider than the viewport even at
+   the clamped title size, and an unbreakable span that wide forces the whole page
+   to scroll sideways. A very small screen gets a mid-phrase break instead, which is
+   the lesser problem. */
+.nowrap {
+  white-space: nowrap;
+}
+
+/* `em`, not `px`, and deliberately generous. The span overflows when its width — which
+   scales with the *text size* — exceeds its column, which scales with the viewport. A px
+   bound therefore covers only one of the two variables: at 200% text the phrase doubles
+   while the column does not, so a 500px window failed where 320px passed, and the excess
+   was clipped unreachably by Bulma's `html { overflow-x: hidden }`. An `em` bound tracks
+   the root font size, so it widens exactly as the text does: 640px at the default size,
+   1280px at 200%. Above it the phrase always fits. */
+@media screen and (max-width: 40em) {
+  .nowrap {
+    white-space: normal;
+  }
+}
+
+/* ---- Comparison slider (canvas, driven by video_comparison.js) ---- */
+
+.video-compare-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  position: relative;
+  display: block;
+  line-height: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px var(--shadow);
+}
+
+.videoMerge {
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 100%;
+  display: block;
+  margin: 0 auto;
+  background-size: cover;
+}
+
+/* Only the canvas is meant to be visible; the <video> is just the frame source.
+   resizeAndPlay() sets height:0 on it, but an `aspect-ratio` on the same element
+   re-derives a height from its width and wins, leaving a white band above the
+   canvas inside the rounded container. Collapse it here instead, and let the
+   canvas carry the ratio that reserves space before JS sizes it. */
+.video-compare-container video.video {
+  display: block;
+  width: 100%;
+  height: 0;
+}
+
+/* The source is a side-by-side pair, so the visible half is 16:9. Without this
+   the canvas holds its default 300x150 ratio until the slider initialises. */
+.video-compare-container canvas.videoMerge {
+  aspect-ratio: 16 / 9;
+}
+
+/* ---- Hero / teaser ---- */
+
+.footer .icon-link {
+  font-size: 25px;
+  color: var(--text-heading);
+}
+
+.link-block > .button {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+/* The publication link buttons are `nowrap` pills in an inline row. At large text sizes a
+   single pill can be wider than its column, and because the row is plain inline flow with
+   `overflow: visible` the excess is clipped by `html { overflow-x: hidden }` rather than
+   wrapping or scrolling — buttons a 200% reader cannot reach. Flexing the row lets the
+   pills wrap onto more lines, and letting a label break is the lesser evil against losing
+   the button entirely. */
+.publication-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.publication-links .button {
+  max-width: 100%;
+  white-space: normal;
+}
+
+.teaser {
+  font-family: 'Google Sans', 'Google Sans Fallback', 'Noto Sans', sans-serif;
+}
+
+.publication-title {
+  color: var(--text-heading);
+  margin-top: -20px;
+  font-family: 'Google Sans', 'Google Sans Fallback', 'Noto Sans', sans-serif;
+}
+
+.publication-title.is-1 {
+  font-size: clamp(1.65rem, 5.2vw, 3rem);
+}
+
+.title-phrase {
+  white-space: nowrap;
+}
+
+.publication-authors {
+  color: var(--text-heading);
+  font-family: 'Google Sans', 'Google Sans Fallback', 'Noto Sans', sans-serif;
+}
+
+/* Author names are link-coloured; the affiliation line beneath them is not. Both live
+   in `.publication-authors`, so the institution links carry `.plain-link` and are
+   excluded here — see the note in theme.css. */
+.publication-authors a:not(.plain-link) {
+  color: var(--link) !important;
+}
+
+.publication-venue {
+  color: var(--text-heading);
+  font-weight: bold;
+}
+
+.author-block {
+  display: inline-block;
+}
+
+/* The "* denotes equal contribution" line, tucked under the author list. Bulma's
+   .columns carries a bottom margin that left a visible gap between the two; this
+   pulls it closed. Was an inline `margin-bottom: -5px`.
+
+   The selector has to include `.columns` to outrank
+   `.columns:not(:last-child){margin-bottom:calc(1.5rem - .75rem)}` — one class loses
+   to two, so as a bare `.author-note` this kept Bulma's 12px and the gap it was
+   written to close stayed open. */
+.columns.author-note {
+  margin-bottom: -5px;
+}
+
+/* The embedded talk gets the same raised surface as the other media on the page,
+   so the player reads as an inset object rather than a hole cut in the layout.
+   The shadow sits on this wrapper, not the <iframe>: `overflow: hidden` is what
+   clips the player to the rounded corners and would clip a child's shadow, but an
+   element's own shadow still paints outside its clip. */
+.publication-video {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%;
+  overflow: hidden;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 16px var(--shadow);
+}
+
+.publication-video iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- Media sized to the source resolution ----
+ *
+ * The teaser is 808px wide and shows only its left half (404px visible); the TSP
+ * comparison in the Method section is a 960x270 side-by-side, so 480px is visible.
+ * Both were being stretched across the full content column, which upscaled them
+ * 2x or more and read as grainy next to the sharper results.
+ *
+ * The TSP slider is capped to the same width as a selected results slide, so the
+ * two read as the same kind of figure rather than two different sizes.
+ */
+@media screen and (min-width: 769px) {
+  /* Between the abstract column (744px, where this used to sit and was actually
+     downscaled) and the full-bleed teasers on the sibling pages (~1300px). The
+     source is 808x480 with the whole frame visible — not a side-by-side pair — so
+     1020px upscales it 1.26x: enough presence to read as the page's opening figure,
+     well short of the 1.6x that made it soft at full width. */
+  #teaser {
+    max-width: 1020px;
+  }
+
+  /* Fills the content column it sits in (763px) rather than being capped narrower
+     than the prose around it. The 960x270 source shows a 480px half, so this upscales
+     it 1.59x — the same order as the results carousels, and the figure now lines up
+     with the text it is described by instead of floating inset. */
+  .compare-sd {
+    max-width: 100%;
+  }
+}
+
+#teaser {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px var(--shadow);
+}
+
+/* ---- Carousel widths matched to the source resolution ----
+ *
+ * These clips are small at source and there is no larger master to re-encode from:
+ * the real-world scenes are 480x270 (the side-by-side pairs are 960 wide, of which
+ * only half is ever drawn) and the synthetic ones are 800x800. The peeking carousel
+ * centres one slide at ~914px, which upscaled the 480px clips 1.9x and made them
+ * visibly grainy — the original 2-up carousel had shown them at roughly 1:1.
+ *
+ * Capping each carousel near its own source width restores that, and the peeking
+ * neighbours grow into the space left over.
+ *
+ * Desktop only. Below 768px slideshow.css sets `--slideshow-peek: 1` so the active
+ * slide fills the content column and the neighbours are hidden; overriding
+ * `--slideshow-slide-w` there instead would pin the slide to 560px on a phone —
+ * narrower than the column, which is worse than a little softness.
+ */
+@media screen and (min-width: 769px) {
+
+  /* Both carousels are held to the same slide width so the Results section reads as
+     one set of figures rather than two differently-sized ones. That costs the
+     real-world clips some sharpness — their visible half is 480px at source, so this
+     upscales them 1.5x instead of the 1.17x a 560px cap gave — but a visible step in
+     figure size between the two rows was the more distracting of the two problems. */
+  .slideshow-sd,
+  .slideshow-square {
+    --slideshow-slide-w: min(720px, 68%);
+  }
+}
+
+/* ---- Synthetic-scene carousel in dark mode ----
+ *
+ * The second results carousel shows the synthetic D-NeRF scenes, which are rendered on
+ * a pure black ground — sampled at 0,0,0 in all four corners of every poster. On the
+ * light page that reads as a framed black figure; on the dark page the figure and the
+ * page are the same colour, so the slides lose their edges entirely and the carousel
+ * becomes an indistinct black band.
+ *
+ * A hairline outline restores the boundary. `outline` rather than `border` so it does
+ * not participate in layout — a border would add 2px to each slide and shift the
+ * carousel's measured width, which the peek calculation depends on. The active slide
+ * gets a brighter line, keeping the selection cue that the shadow can no longer carry
+ * against black.
+ *
+ * Scoped to `.slideshow-square`, so the real-world carousel above — whose scenes have
+ * their own light backgrounds and visible edges — is untouched, as is every other site.
+ */
+[data-theme="dark"] .slideshow-square .slideshow-slide > video {
+  /* 0.38, not 0.22. This outline exists to give the slides an edge they otherwise lack
+     against the black page, so it has to clear the 3:1 WCAG 1.4.11 asks of a boundary —
+     0.22 composites to #383838, only 1.79:1, which defeated the point. 0.38 is 3.39:1. */
+  outline: 1px solid rgba(255, 255, 255, 0.38);
+  outline-offset: -1px;
+}
+
+[data-theme="dark"] .slideshow-square .slideshow-slide.is-active > video {
+  /* Kept a clear step above the inactive 0.38 so the selection still reads. 6.48:1. */
+  outline-color: rgba(255, 255, 255, 0.56);
+}
+
+/* ---- Table legend swatches ----
+ *
+ * The three chips in the results caption that name the colours used in the table.
+ * Was the same inline style attribute repeated on each span with only the fill
+ * differing.
+ *
+ * The text colour is stated rather than inherited: #e6a09f, the lightest fill, gives
+ * only 4.18:1 against the #4a4a4a body colour, short of the 4.5:1 WCAG AA asks for at
+ * this size. #363636 — Bulma's own value for <strong> — takes it to 5.69:1 and leaves
+ * the fills alone, since those have to match the colours in the table itself.
+ */
+.swatch {
+  color: #363636;
+  /* Fixed, not tokenised: the chips keep their pale fills in both themes because the
+     colours match the table they describe, so the text has to stay dark on them. */
+  padding: 0 3px;
+  border-radius: 3px;
+}
+
+.swatch-low {
+  background-color: #e6a09f;
+}
+
+.swatch-best {
+  background-color: #86E655;
+}
+
+.swatch-second {
+  background-color: #D0F0C0;
+}
+
+/* The Results section stacks two carousels — real-world scenes above, synthetic
+   below — in sibling `.container`s with no gap between them, so they read as one
+   run. A little breathing room separates them without implying a section break. */
+#results .container + .container {
+  margin-top: 2rem;
+}
+
+/* ---- Figures ---- */
+
+figcaption {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* A table caption sits above its table and needs more air than an image caption,
+   and is not italic — Bulma's .content styles <figcaption> italic by default.
+   Was an inline style attribute on the element. */
+.table-caption {
+  font-style: normal;
+  margin-top: 2em;
+  margin-bottom: 1em;
+}
+
+/* Side-by-side render | mesh clip at the end of Method: one combined encode, so
+   the halves cannot drift apart. */
+.method-video {
+  position: relative;
+  max-width: 820px;
+  margin: 0.25rem auto 1.5rem;
+}
+
+/* Same pill as the teaser canvas labels (teaser-comparison.js drawBubble):
+   size published by the teaser as --teaser-pill-font, 6 px from the bottom,
+   black at 55%. */
+.video-pill {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
+  padding: 0.35em 0.6em;
+  border-radius: 0.6em;
+  background: rgba(0, 0, 0, 0.55);
+  color: #ffffff;
+  font-family: "Google Sans", "Google Sans Fallback", "Noto Sans", sans-serif;
+  font-size: var(--teaser-pill-font, 1.4rem);
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.method-video video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 1;
+  border-radius: 10px;
+  background: #000;
+}
+
+.method-video video[data-click-toggle] {
+  cursor: pointer;
+}
+
+.method-video video[data-click-toggle]:focus-visible {
+  outline: 3px solid var(--link);
+  outline-offset: 3px;
+}
+
+/* Method subsections (h3 under the section h2), as on the other project pages. */
+.method-subtitle {
+  margin-top: 2rem;
+  margin-bottom: 0.9rem !important;
+}
+
+.title.is-3 + .method-subtitle {
+  margin-top: 0;
+}
+
+/* The method figure is a single-column paper figure; keep it near its paper size
+   between the Method paragraphs, with its caption below. */
+.method-figure {
+  max-width: 560px;
+  margin: 0.5rem auto 1.75rem;
+}
+
+.method-figure .paper-figure {
+  width: 100%;
+  margin-bottom: 0;
+  background: #ffffff;
+}
+
+.method-figure figcaption {
+  font-style: normal;
+  line-height: 1.45;
+  text-align: left;
+}
+
+/* Fig. 2 as four unlabeled panels from the paper sources, each with an HTML label.
+   A panel's flex weight is its image aspect ratio (--ar), so every image in a row
+   has the same height and the labels share one baseline. Below 1024 px: two rows,
+   diagrams over renders. From 1024 px the rows sit side by side, one row of four
+   across the full content width with a 5 px gap. */
+.method-panels,
+.method-panel-row {
+  display: flex;
+  gap: 5px;
+  align-items: flex-start;
+}
+
+.method-panels {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.method-panel {
+  flex: var(--ar) 1 0;
+  min-width: 0;
+}
+
+.method-figure--panels .paper-figure {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+.method-panel-label {
+  margin: 0.35rem 0 0;
+  color: var(--text);
+  font-size: 0.82rem;
+  line-height: 1.3;
+  text-align: center;
+}
+
+@media screen and (min-width: 1024px) {
+  .method-figure--panels {
+    max-width: none;
+  }
+
+  .method-panels {
+    flex-direction: row;
+  }
+
+  .method-panel-row {
+    flex: var(--ar) 1 0;
+    min-width: 0;
+  }
+}
+
+[data-theme="dark"] .method-figure .paper-figure {
+  padding: 0.75rem;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+/* Figures lifted from the paper sit on their own white background, so a raised
+   surface would outline the whitespace rather than the content. The teaser and the
+   result clips are rendered imagery and do keep their shadow. */
+.paper-figure {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto 1.5rem;
+}
+
+/* ---- Related work ----
+   Was an <ol> whose items ran title, "(CVPR 2025)", "[BibTeX]" and the description
+   together as one inline paragraph. The numbering implied a ranking that isn't
+   there, and the bracketed metadata competed with the title. Each entry now has a
+   title line above its description, with the venue as a quiet badge. */
+
+.related-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.related-item + .related-item {
+  margin-top: 1.5rem;
+}
+
+.related-title {
+  margin-bottom: 0.2rem !important;
+}
+/* Venue and BibTeX sit on their own line under the title, so a long paper name
+   never has to share a baseline with them. */
+.related-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem !important;
+}
+
+.related-title > a:first-child {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--link);
+}
+
+/* Metadata, not a heading: sized and coloured to sit behind the title. */
+.related-venue {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-quiet);
+  background-color: var(--bg-chip);
+  border-radius: 999px;
+  padding: 0.15em 0.6em;
+  white-space: nowrap;
+}
+
+/* A quiet secondary action. The underline appears on hover so the link is
+   discoverable without shouting on every entry. */
+.related-bibtex {
+  font-size: 0.82rem;
+  color: var(--text-quiet);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.related-bibtex:hover {
+  color: var(--text-hover);
+  border-bottom-color: #b5b5b5;
+}
+
+/* ---- BibTeX block ----
+   Was a long inline style attribute on both the container and its button. */
+
+.bibtex-container pre {
+  overflow-x: auto;
+  white-space: pre;
+  word-wrap: normal;
+}
+
+
+/* Justified text opens rivers on a phone-width column. */
+@media screen and (max-width: 768px) {
+  .content.has-text-justified,
+  .has-text-justified {
+    text-align: left !important;
+  }
+}
+
+.bibtex-container {
+  position: relative;
+  background-color: var(--bg-code);
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.copy-code-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background-color: var(--bg);
+  /* Was #e5e5e5, 1.26:1 against the button's own white fill — a control boundary
+     WCAG 1.4.11 asks to reach 3:1. The measurement that matters is against the
+     #f5f5f5 code block the button sits on, not its own fill: #8f8f8f gave 3.23:1
+     inward but only 2.97:1 outward, so #858585 is used instead — 3.45:1 and 3.17:1,
+     clearing 3:1 on both edges while still reading as quiet chrome. */
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-quiet);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* Hover used to lighten the border to #b5b5b5 — 2.05:1, less visible than at rest,
+   so the feedback made the control harder to see. Darker instead. */
+.copy-code-btn:hover {
+  border-color: var(--border-hover);
+  color: var(--text-hover);
+}
+
+.copy-code-btn.copied {
+  color: var(--copied);
+  border-color: var(--copied);
+}
+
+/* ---- Equations ----
+   Long display equations get a stacked variant for narrow screens; only one of
+   the pair is ever rendered. */
+
+.math-mobile {
+  display: none;
+}
+
+.math-desktop {
+  display: block;
+}
+
+@media screen and (max-width: 768px) {
+  .math-mobile {
+    display: block;
+  }
+
+  .math-desktop {
+    display: none;
+  }
+
+  .video-compare-container {
+    width: 100%;
+  }
+
+  .is-size-3 {
+    font-size: 1.4rem !important;
+  }
+
+  .is-size-5 {
+    font-size: 1rem !important;
+  }
+}
+
+/* ---- Display equations ----
+ *
+ * These formulas were authored to fit a phone, so none of them should ever show a
+ * scrollbar. `overflow: hidden` guarantees no scroll track is ever painted, and
+ * math-fit.js guarantees there is nothing to hide: it measures each equation once
+ * MathJax has typeset it and scales that one by exactly the ratio it needs.
+ *
+ * A fixed set of `scale()` breakpoints lived here through several revisions. CSS cannot
+ * ask how wide an equation turned out, so any such set is a guess — too weak for the
+ * widest formula on the narrowest screen, and needlessly small for every other one.
+ * Measuring is the only way to be certain everything fits, and being certain is what
+ * lets the overflow stay hidden with no scrollbar anywhere.
+ *
+ * (Originally there were no rules here at all: equations rendered at natural width and
+ * Bulma's `html { overflow-x: hidden }` quietly clipped any that were too wide.)
+ */
+mjx-container[display="true"] {
+  max-width: 100%;
+  /* `clip`, not `hidden`. Both suppress the scrollbar, but a `hidden` box is still a
+     scroll container — `scrollLeft` can be moved programmatically and some engines will
+     let a trackpad fling it — whereas `clip` is not scrollable at all. Since math-fit.js
+     guarantees the ink already fits, there is nothing to reach and nothing to scroll to. */
+  overflow: clip;
+}
+
+/* Inline maths is left alone. It sits in a line box, so giving it its own scroll or
+   transform would break the run of text around it, and these expressions are short
+   enough to wrap with the sentence. */
+mjx-container:not([display="true"]) {
+  max-width: 100%;
+}
+
+
+/* ---- Reserving space before the poster decodes ----
+ * See the note in slideshow.css. This page carries three source shapes, so the
+ * ratio is declared per carousel rather than globally. */
+.slideshow-sd .slideshow-slide > video {
+  aspect-ratio: 16 / 9;
+}
+
+.slideshow-square .slideshow-slide > video {
+  aspect-ratio: 1 / 1;
+}
+
+#teaser {
+  aspect-ratio: 101 / 60;
+}

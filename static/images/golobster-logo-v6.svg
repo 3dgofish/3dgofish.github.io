@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="73 73 878 878" role="img" aria-labelledby="golobster-v6-title golobster-v6-description">
+  <title id="golobster-v6-title">GoLobster logo</title>
+  <desc id="golobster-v6-description">A three-card GoLobster hand with a cute red cartoon lobster, two small pincers, eight walking legs, four large oval abdominal segments, relaxed antennae, an attached fan tail, and one oversized eye.</desc>
+  <defs>
+    <linearGradient id="v6-card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fffdf5"/>
+      <stop offset="1" stop-color="#f6edd9"/>
+    </linearGradient>
+    <linearGradient id="v6-shell" x1="0" y1="0" x2="0.85" y2="1">
+      <stop offset="0" stop-color="#ff9a2f"/>
+      <stop offset="0.34" stop-color="#ff5535"/>
+      <stop offset="0.7" stop-color="#ee2f3f"/>
+      <stop offset="1" stop-color="#bd173b"/>
+    </linearGradient>
+    <linearGradient id="v6-claw" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#ff7437"/>
+      <stop offset="0.56" stop-color="#ef343e"/>
+      <stop offset="1" stop-color="#b51239"/>
+    </linearGradient>
+    <radialGradient id="v6-glow" cx="32%" cy="24%" r="78%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="0.56" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#351431" stop-opacity="0.18"/>
+    </radialGradient>
+    <filter id="v6-shadow" x="-30%" y="-25%" width="160%" height="165%">
+      <feDropShadow dx="0" dy="24" stdDeviation="24" flood-color="#071b2b" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#v6-shadow)">
+    <use href="#v6-card-face" transform="translate(575.5 512) rotate(7) scale(0.82) translate(-512 -512)"/>
+    <use href="#v6-card-face" transform="translate(512 500) scale(0.82) translate(-512 -512)"/>
+    <g transform="translate(448.5 512) rotate(-7) scale(0.82) translate(-512 -512)">
+      <g id="v6-card-face">
+        <rect x="151" y="62" width="722" height="900" rx="82" fill="url(#v6-card)" stroke="#000000" stroke-width="24"/>
+        <text x="512" y="347" fill="#000000" font-family="Arial, Helvetica, sans-serif"
+          font-size="340" font-weight="800" letter-spacing="-25" text-anchor="middle">GO</text>
+
+        <g transform="translate(40 119) scale(0.9)">
+          <!-- Two relaxed antennae frame the face without tight curls. -->
+          <g fill="none" stroke="#1d112d" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M310 420C276 384 257 343 260 301"/>
+            <path d="M398 416C428 374 462 340 506 314"/>
+          </g>
+
+          <!-- All three fan lobes share a buried base inside the last body segment. -->
+          <g fill="url(#v6-claw)" stroke="#1d112d" stroke-width="14" stroke-linejoin="round">
+            <path d="M720 565C775 540 831 556 850 590C835 625 790 641 742 622Z"/>
+            <path d="M735 604C797 598 842 628 846 665C818 692 770 682 727 648Z"/>
+            <path d="M728 642C775 665 803 710 785 746C744 743 715 708 706 662Z"/>
+          </g>
+
+          <!-- Four pairs of walking legs; the two claws below form the fifth leg pair. -->
+          <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Far-side four. -->
+            <g stroke="#1d112d" stroke-width="18" opacity="0.88">
+              <path d="M420 570L438 635L480 696"/>
+              <path d="M448 580L472 650L525 716"/>
+              <path d="M476 585L508 651L570 711"/>
+              <path d="M504 578L546 640L615 694"/>
+            </g>
+            <g stroke="#c9253d" stroke-width="7" opacity="0.88">
+              <path d="M420 570L438 635L480 696"/>
+              <path d="M448 580L472 650L525 716"/>
+              <path d="M476 585L508 651L570 711"/>
+              <path d="M504 578L546 640L615 694"/>
+            </g>
+            <!-- Near-side four. -->
+            <g stroke="#1d112d" stroke-width="20">
+              <path d="M432 576L454 660L500 731"/>
+              <path d="M460 586L491 670L545 739"/>
+              <path d="M488 586L529 663L590 724"/>
+              <path d="M516 577L565 642L635 698"/>
+            </g>
+            <g stroke="#e33a42" stroke-width="8">
+              <path d="M432 576L454 660L500 731"/>
+              <path d="M460 586L491 670L545 739"/>
+              <path d="M488 586L529 663L590 724"/>
+              <path d="M516 577L565 642L635 698"/>
+            </g>
+          </g>
+
+          <!-- Four large overlapping oval abdominal segments, shrinking toward the fan. -->
+          <g fill="url(#v6-shell)" stroke="#1d112d" stroke-width="16">
+            <ellipse cx="725" cy="585" rx="78" ry="82" transform="rotate(-16 725 585)"/>
+            <ellipse cx="650" cy="548" rx="88" ry="95" transform="rotate(-13 650 548)"/>
+            <ellipse cx="575" cy="518" rx="97" ry="103" transform="rotate(-10 575 518)"/>
+            <ellipse cx="495" cy="502" rx="106" ry="110" transform="rotate(-8 495 502)"/>
+          </g>
+          <ellipse cx="495" cy="502" rx="106" ry="110" transform="rotate(-8 495 502)" fill="url(#v6-glow)"/>
+
+          <!-- The smaller claws stay secondary to the face and body. -->
+          <g transform="translate(400 600) scale(0.82) translate(-400 -600)">
+          <!-- Narrow forearms connect the carapace to two true two-jaw pincers. -->
+          <g fill="none" stroke-linecap="round">
+            <path d="M349 548C315 554 287 571 264 594" stroke="#1d112d" stroke-width="46"/>
+            <path d="M349 548C315 554 287 571 264 594" stroke="#ef3b40" stroke-width="23"/>
+            <path d="M421 578C406 602 398 625 394 650" stroke="#1d112d" stroke-width="48"/>
+            <path d="M421 578C406 602 398 625 394 650" stroke="#f04b40" stroke-width="24"/>
+          </g>
+
+          <!-- Small forward claw: one hooked chela with a clear opening. -->
+          <path d="M300 572C274 548 235 545 200 562C166 579 150 609 162 633C174 656 200 657 220 637L244 612C237 637 239 659 254 674C271 692 298 679 313 655C333 622 329 592 300 572Z"
+            fill="url(#v6-claw)" stroke="#1d112d" stroke-width="16" stroke-linejoin="round"/>
+          <path d="M220 637C230 625 237 617 244 612C244 628 248 643 259 654"
+            fill="none" stroke="#1d112d" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+
+          <!-- Large lower claw: one broad chela with two pointed jaws. -->
+          <path d="M445 642C410 612 360 606 326 626C293 645 278 676 290 703C300 726 325 731 350 714L387 688C371 718 356 746 326 764C297 782 289 811 310 830C333 850 377 834 416 809C462 780 491 741 493 700C494 673 474 648 445 642Z"
+            fill="url(#v6-claw)" stroke="#1d112d" stroke-width="17" stroke-linejoin="round"/>
+          <path d="M350 714C365 703 377 694 387 688C380 708 368 726 352 740"
+            fill="none" stroke="#1d112d" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+
+          <!-- The broad head is separate from the abdomen, like a lobster carapace. -->
+          <path d="M286 418C345 385 444 391 501 432C544 463 551 520 529 568C505 620 431 647 360 634C293 622 254 583 254 521C254 475 267 443 286 418Z"
+            fill="url(#v6-shell)" stroke="#1d112d" stroke-width="17" stroke-linejoin="round"/>
+          <path d="M286 418C345 385 444 391 501 432C544 463 551 520 529 568C505 620 431 647 360 634C293 622 254 583 254 521C254 475 267 443 286 418Z"
+            fill="url(#v6-glow)"/>
+
+          <!-- The big GOFish eye anchors a friendlier, more expressive face. -->
+          <circle cx="311" cy="462" r="98" fill="#ffffff" stroke="#1d112d" stroke-width="19"/>
+          <circle cx="284" cy="477" r="46" fill="#1d112d"/>
+          <circle cx="268" cy="459" r="15" fill="#ffffff"/>
+          <ellipse cx="426" cy="552" rx="26" ry="14" fill="#ff9a76" opacity="0.75"/>
+          <path d="M342 583C362 606 395 606 419 581" fill="none" stroke="#1d112d" stroke-width="14" stroke-linecap="round"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,10 @@
+{
+  "name": "gofish-project-page",
+  "private": true,
+  "scripts": {
+    "build": "node tools/build-bundles.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  }
+}

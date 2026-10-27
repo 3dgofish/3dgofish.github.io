@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <script>
+        (function () {
+            var t = 'light';
+            try { t = localStorage.getItem('theme-preference') || 'light'; } catch (e) { }
+            document.documentElement.setAttribute('data-theme', t);
+            document.addEventListener('DOMContentLoaded', function () {
+                var m = document.querySelector('meta[name="theme-color"]');
+                if (m) m.setAttribute('content', t === 'dark' ? '#000000' : '#ffffff');
+            });
+        })();
+    </script>
+
+    <meta charset="utf-8">
+    <meta name="description"
+        content="GOFish reconstructs simulation-ready 3D digital twins directly from fisheye imagery, combining photorealistic Gaussian Splatting over the camera's full field of view with an aligned mesh for collisions.">
+    <meta name="keywords"
+        content="GOFish, Gaussian opacity fields, Gaussian Splatting, fisheye reconstruction, full field of view, wide-angle cameras, surface reconstruction, novel-view synthesis">
+    <meta name="author"
+        content="Allen Tu, Meher Gitika Karumuri, Shifan Zhu, Hailing Wang, Yen-Liang Lin, David Held, Matthias Zwicker, Tom Goldstein">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="color-scheme" content="light dark">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+    <link rel="icon" href="./static/images/gofish-logo.svg?v=2026.10.17.4" type="image/svg+xml">
+    <link rel="icon" href="./static/images/favicon-32x32.png?v=2026.10.17.4" type="image/png" sizes="32x32">
+    <link rel="apple-touch-icon" href="./static/images/apple-touch-icon.png?v=2026.10.17.4" sizes="180x180">
+    <title>GOFish: Full Field-of-View Gaussian Splatting and Mesh Extraction</title>
+
+    <link rel="canonical" href="https://3dgofish.github.io/">
+
+    <meta name="citation_title" content="GOFish: Full Field-of-View Gaussian Splatting and Mesh Extraction">
+    <meta name="citation_author" content="Allen Tu">
+    <meta name="citation_author" content="Meher Gitika Karumuri">
+    <meta name="citation_author" content="Shifan Zhu">
+    <meta name="citation_author" content="Hailing Wang">
+    <meta name="citation_author" content="Yen-Liang Lin">
+    <meta name="citation_author" content="David Held">
+    <meta name="citation_author" content="Matthias Zwicker">
+    <meta name="citation_author" content="Tom Goldstein">
+    <meta name="citation_language" content="en">
+    <meta name="citation_abstract_html_url" content="https://3dgofish.github.io/">
+
+    <meta property="og:title" content="GOFish: Full Field-of-View Gaussian Splatting and Mesh Extraction">
+    <meta property="og:description"
+        content="GOFish reconstructs simulation-ready 3D digital twins directly from fisheye imagery, combining photorealistic Gaussian Splatting over the camera's full field of view with an aligned mesh for collisions.">
+    <meta property="og:url" content="https://3dgofish.github.io/">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="GOFish">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:image" content="https://3dgofish.github.io/static/images/teaser-card.jpg">
+    <meta property="og:image:secure_url" content="https://3dgofish.github.io/static/images/teaser-card.jpg">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt"
+        content="GOFish render and mesh of the FIORD Hall scene beside 3DGUT plus PPISP, over a 200-degree fisheye image">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="GOFish: Full Field-of-View Gaussian Splatting and Mesh Extraction">
+    <meta name="twitter:description"
+        content="GOFish reconstructs simulation-ready 3D digital twins directly from fisheye imagery, combining photorealistic Gaussian Splatting over the camera's full field of view with an aligned mesh for collisions.">
+    <meta name="twitter:url" content="https://3dgofish.github.io/">
+    <meta name="twitter:domain" content="3dgofish.github.io">
+    <meta name="twitter:image" content="https://3dgofish.github.io/static/images/teaser-card.jpg">
+    <meta name="twitter:image:alt"
+        content="GOFish render and mesh of the FIORD Hall scene beside 3DGUT plus PPISP, over a 200-degree fisheye image">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ScholarlyArticle",
+      "@id": "https://3dgofish.github.io/#article",
+      "url": "https://3dgofish.github.io/",
+      "headline": "GOFish: Full Field-of-View Gaussian Splatting and Mesh Extraction",
+      "description": "GOFish reconstructs simulation-ready 3D digital twins directly from fisheye imagery, combining photorealistic Gaussian Splatting over the camera's full field of view with an aligned mesh for collisions.",
+      "abstract": "Fisheye lenses capture a wide field of view in one frame, yet Gaussian Splatting rasterizers truncate FIORD's nominal 200° aperture, and surface methods rectify the periphery away. Wide-angle reconstruction must separate the stored scene from three per-view effects: missing rays, spatially varying pixel footprints, and rim falloff. Left unmodeled, they are absorbed into the scene and every mesh read from it, and neither full coverage nor geometry losses repair them. From this principle we derive GOFish, the first Gaussian Splatting method to rasterize and mesh a fisheye's full field of view. It conservatively admits every Gaussian whose renderer support, at most 3σ, meets a calibrated ray, applies each view's footprint at render time without storing it, densifies in calibrated image space, and absorbs the rim falloff. GOFish renders the full apertures of FIORD and FullCircle 2.3 and 2.0 dB above the best prior method, leads each released fisheye renderer even on its own field of view, and meshes FIORD with the best F-score of any surface method. The single scene renders in real time, can be ray traced, and carries a mesh for physics: a LiDAR-free, simulation-ready digital twin.",
+      "author": [
+        {"@type": "Person", "name": "Allen Tu", "url": "https://tuallen.github.io/", "affiliation": [{"@type": "Organization", "name": "Amazon"}, {"@type": "CollegeOrUniversity", "name": "University of Maryland, College Park", "url": "https://www.umiacs.umd.edu/"}]},
+        {"@type": "Person", "name": "Meher Gitika Karumuri", "url": "https://scholar.google.com/citations?user=R14csHAAAAAJ", "affiliation": {"@type": "Organization", "name": "Amazon"}},
+        {"@type": "Person", "name": "Shifan Zhu", "url": "https://shifanzhu.github.io/", "affiliation": [{"@type": "Organization", "name": "Amazon"}, {"@type": "CollegeOrUniversity", "name": "University of Massachusetts Amherst", "url": "https://www.cics.umass.edu/"}]},
+        {"@type": "Person", "name": "Hailing Wang", "url": "https://scholar.google.com/citations?user=oKoYjqUAAAAJ", "affiliation": [{"@type": "Organization", "name": "Amazon"}, {"@type": "CollegeOrUniversity", "name": "Northeastern University", "url": "https://coe.northeastern.edu/"}]},
+        {"@type": "Person", "name": "Yen-Liang Lin", "url": "https://sites.google.com/view/yenlianglin", "affiliation": {"@type": "Organization", "name": "Amazon"}},
+        {"@type": "Person", "name": "David Held", "url": "https://davheld.github.io/", "affiliation": [{"@type": "Organization", "name": "Amazon"}, {"@type": "CollegeOrUniversity", "name": "Carnegie Mellon University", "url": "https://www.ri.cmu.edu/"}]},
+        {"@type": "Person", "name": "Matthias Zwicker", "url": "https://www.cs.umd.edu/~zwicker/", "affiliation": {"@type": "CollegeOrUniversity", "name": "University of Maryland, College Park", "url": "https://www.umiacs.umd.edu/"}},
+        {"@type": "Person", "name": "Tom Goldstein", "url": "https://www.cs.umd.edu/~tomg/", "affiliation": {"@type": "CollegeOrUniversity", "name": "University of Maryland, College Park", "url": "https://www.umiacs.umd.edu/"}}
+      ],
+      "image": {
+        "@type": "ImageObject",
+        "url": "https://3dgofish.github.io/static/images/teaser-card.jpg",
+        "contentUrl": "https://3dgofish.github.io/static/images/teaser-card.jpg",
+        "width": 1200,
+        "height": 630
+      },
+      "keywords": ["GOFish", "Gaussian opacity fields", "Gaussian Splatting", "fisheye reconstruction", "full field of view", "surface reconstruction"],
+      "dateModified": "2026-10-22",
+      "isAccessibleForFree": true,
+      "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "inLanguage": "en-US",
+      "mainEntityOfPage": {"@type": "WebPage", "@id": "https://3dgofish.github.io/"}
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="./static/webfonts/noto-sans-latin.woff2?v=2026.10.13.4" as="font"
+        type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans&amp;display=swap"
+        media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans&amp;display=swap"></noscript>
+
+    <link rel="stylesheet" href="./static/css/site.css?v=2026.10.27.4">
+    <script defer src="./static/js/site.js?v=2026.10.27.1"></script>
+    <script defer src="./static/js/math-fit.js?v=2026.10.19.1"></script>
+    <!-- tex-chtml, not tex-mml-chtml: there is no <math> markup on this page. The
+         config must precede the script tag. \Mat matches the paper's
+         math_commands.tex, so the equations are the paper's own source. -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']],
+                macros: { Mat: ['\\boldsymbol{#1}', 1] }
+            },
+            options: {
+                enableMenu: false
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+
+<body>
+    <main>
+        <section class="hero">
+            <div class="hero-body">
+                <div class="container is-max-desktop">
+                    <div class="columns is-centered">
+                        <div class="column has-text-centered">
+                            <h1 class="title is-1 publication-title">
+                                GOFish: Full <span class="title-phrase">Field-of-View</span><br class="title-break">
+                                <span class="title-phrase">Gaussian Splatting</span> and
+                                <span class="title-phrase">Mesh Extraction</span>
+                            </h1>
+                            <div class="is-size-5 publication-authors">
+                                <span class="author-block"><a href="https://tuallen.github.io/" target="_blank" rel="noopener noreferrer">Allen Tu</a><sup>1,2</sup>,</span>
+                                <span class="author-block"><a href="https://scholar.google.com/citations?user=R14csHAAAAAJ" target="_blank" rel="noopener noreferrer">Meher Gitika Karumuri</a><sup>1</sup>,</span>
+                                <span class="author-block"><a href="https://shifanzhu.github.io/" target="_blank" rel="noopener noreferrer">Shifan Zhu</a><sup>1,3</sup>,</span>
+                                <span class="author-block"><a href="https://scholar.google.com/citations?user=oKoYjqUAAAAJ" target="_blank" rel="noopener noreferrer">Hailing Wang</a><sup>1,4</sup>,</span><br class="author-break">
+                                <span class="author-block"><a href="https://sites.google.com/view/yenlianglin" target="_blank" rel="noopener noreferrer">Yen-Liang Lin</a><sup>1</sup>,</span>
+                                <span class="author-block"><a href="https://davheld.github.io/" target="_blank" rel="noopener noreferrer">David Held</a><sup>1,5</sup>,</span>
+                                <span class="author-block"><a href="https://www.cs.umd.edu/~zwicker/" target="_blank" rel="noopener noreferrer">Matthias Zwicker</a><sup>2</sup>,</span>
+                                <span class="author-block"><a href="https://www.cs.umd.edu/~tomg/" target="_blank" rel="noopener noreferrer">Tom Goldstein</a><sup>2</sup></span>
+                            </div>
+                            <div class="is-size-5 publication-authors">
+                                <span class="author-block"><sup>1</sup><a class="plain-link" href="https://www.amazon.science/" target="_blank" rel="noopener noreferrer">Amazon</a>,</span>
+                                <span class="author-block"><sup>2</sup><a class="plain-link" href="https://www.umiacs.umd.edu/" target="_blank" rel="noopener noreferrer">University of Maryland, College Park</a>,</span>
+                                <span class="author-block"><sup>3</sup><a class="plain-link" href="https://www.cics.umass.edu/" target="_blank" rel="noopener noreferrer">University of Massachusetts Amherst</a>,</span>
+                                <span class="author-block"><sup>4</sup><a class="plain-link" href="https://coe.northeastern.edu/" target="_blank" rel="noopener noreferrer">Northeastern University</a>,</span>
+                                <span class="author-block"><sup>5</sup><a class="plain-link" href="https://www.ri.cmu.edu/" target="_blank" rel="noopener noreferrer">Carnegie Mellon University</a></span>
+                            </div>
+
+                            <div class="publication-links">
+                                <span class="link-block">
+                                    <a href="#" aria-disabled="true" tabindex="-1"
+                                        class="external-link button is-normal is-rounded is-dark is-placeholder"
+                                        title="Paper coming soon">
+                                        <span class="icon"><i class="fas fa-file-pdf" aria-hidden="true"></i></span>
+                                        <span>Paper</span>
+                                    </a>
+                                </span>
+                                <span class="link-block">
+                                    <a href="#" aria-disabled="true" tabindex="-1"
+                                        class="external-link button is-normal is-rounded is-dark is-placeholder"
+                                        title="arXiv coming soon">
+                                        <span class="icon"><i class="ai ai-arxiv" aria-hidden="true"></i></span>
+                                        <span>arXiv</span>
+                                    </a>
+                                </span>
+                                <span class="link-block">
+                                    <a href="https://github.com/tuallen/GOFish" target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="external-link button is-normal is-rounded is-dark"
+                                        title="GOFish code on GitHub">
+                                        <span class="icon"><i class="fab fa-github" aria-hidden="true"></i></span>
+                                        <span>Code</span>
+                                    </a>
+                                </span>
+                                <span class="link-block">
+                                    <a href="https://huggingface.co/datasets/AllenTu/GOFish-scenes" target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="external-link button is-normal is-rounded is-dark"
+                                        title="GOFish Gaussian scenes and meshes on Hugging Face">
+                                        <span class="icon"><i class="fas fa-download" aria-hidden="true"></i></span>
+                                        <span>Models</span>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="hero teaser" aria-label="GOFish teaser comparison">
+            <div class="hero-body">
+                <div class="container teaser-wide-container">
+                    <div class="gofish-teaser-grid">
+                        <div class="video-compare-container gofish-teaser-comparison"
+                            style="background-image: url('./static/images/fiord/teaser-hall-in-poster.jpg?v=2026.10.18.1'); background-position: center; background-size: cover"
+                            data-top-left-label="GOFish (Ours)"
+                            data-top-left-psnr-label="25.10 PSNR"
+                            data-top-left-lpips-label="0.137 LPIPS"
+                            data-bottom-left-label="GOFish Mesh"
+                            data-bottom-left-fov-label="Full 200&deg; FoV"
+                            data-right-label="3DGUT + PPISP"
+                            data-right-psnr-label="18.93 PSNR"
+                            data-right-lpips-label="0.285 LPIPS"
+                            data-right-bottom-label="160&deg; FoV">
+                            <video class="video" id="gofish-teaser-video" data-teaser-mode="three-way"
+                                loop autoplay playsinline muted preload="auto"
+                                onplay="initialiseGofishTeaser(this)">
+                                <source media="(max-width: 768px)"
+                                    src="./static/videos/teaser-hall-in-3way-mobile.av1.mp4?v=2026.10.19.3"
+                                    type='video/mp4; codecs="av01.0.08M.08"'>
+                                <source media="(max-width: 768px)"
+                                    src="https://huggingface.co/datasets/AllenTu/GOFish-web/resolve/main/videos/h264/teaser-hall-in-3way-mobile.mp4"
+                                    type="video/mp4">
+                                <source src="./static/videos/teaser-hall-in-3way.av1.mp4?v=2026.10.19.3"
+                                    type='video/mp4; codecs="av01.0.08M.08"'>
+                                <source src="https://huggingface.co/datasets/AllenTu/GOFish-web/resolve/main/videos/h264/teaser-hall-in-3way.mp4"
+                                    type="video/mp4">
+                            </video>
+                            <canvas class="videoMerge videoMerge--three-way" id="gofish-teaser-videoMerge"
+                                tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="100"
+                                aria-valuenow="50"
+                                aria-label="Interactive Hall In comparison: GOFish render at upper left, GOFish mesh at lower left, and 3DGUT plus PPISP on the right. Move the pointer or use the arrow keys to position the dividers. Press Space to pause or play both teasers."></canvas>
+                        </div>
+
+                        <div class="video-compare-container gofish-teaser-comparison" id="simulation-teaser"
+                            style="background-image: url('./static/images/fiord/teaser-simulation-poster.jpg?v=2026.10.16.3'); background-position: center; background-size: cover"
+                            data-left-label="GOFish (Ours)"
+                            data-left-capability-one-label="Physical Simulation"
+                            data-left-capability-two-label="Ray Tracing"
+                            data-right-label="3DGUT + PPISP"
+                            data-right-capability-label="Ray Tracing"
+                            data-left-bottom-label="Full 200&deg; FoV"
+                            data-right-bottom-label="160&deg; FoV">
+                            <video class="video" id="gofish-simulation-video" data-teaser-mode="two-way"
+                                loop autoplay playsinline muted preload="metadata"
+                                onplay="initialiseGofishTeaser(this)">
+                                <source src="./static/videos/teaser-simulation-2way.av1.mp4?v=2026.10.17.1"
+                                    type='video/mp4; codecs="av01.0.08M.08"'>
+                                <source src="https://huggingface.co/datasets/AllenTu/GOFish-web/resolve/main/videos/h264/teaser-simulation-2way.mp4"
+                                    type="video/mp4">
+                            </video>
+                            <canvas class="videoMerge videoMerge--two-way" id="gofish-simulation-videoMerge"
+                                tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="100"
+                                aria-valuenow="50"
+                                aria-label="Interactive simulation comparison: GOFish on the left and 3DGUT plus PPISP on the right. Move the pointer or use the arrow keys to position the divider. Press Space to pause or play both teasers."></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="abstract">
+            <div class="container is-max-desktop">
+                <div class="columns is-centered has-text-centered">
+                    <div class="column is-four-fifths">
+                        <h2 class="title is-3">Abstract</h2>
+                        <div class="content has-text-justified">
+                            <p>Robots, autonomous vehicles, and consumer 360&deg; cameras use fisheye lenses for wide fields of view (FoVs). Simulation-ready digital twins require photorealistic rendering across the full FoV and an aligned collision mesh. However, prior fisheye Gaussian Splatting methods only rasterize up to 180&deg; and do not produce meshes, while Gaussian surface reconstruction methods assume pinhole training images.</p>
+                            <p>We present GOFish, the first 3D Gaussian Splatting surface reconstruction method to train directly on fisheye images, rasterize FoVs beyond 180&deg;, and extract an aligned mesh from the same scene. Calibrated densification recovers the surface across the entire FoV, while Calibrated Mip Filtering and Wide-Angle Appearance Modeling keep pixel blur and lens falloff out of the scene and mesh.</p>
+                            <p>Across the 200&deg; FIORD and 205&deg; FullCircle benchmarks, GOFish improves PSNR over the best prior method by 2.28 and 1.97 dB, respectively. It also outperforms fisheye rendering baselines within their own FoVs and achieves the highest mesh F-score on FIORD and the main ScanNet++ set. Together, the Gaussian scene and mesh form a LiDAR-free, simulation-ready digital twin that renders in real time, ray traces the full FoV, and provides collision geometry.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="section" id="method">
+            <div class="container is-max-desktop">
+                <div class="columns is-centered has-text-centered">
+                    <div class="column is-full-width">
+                        <h2 class="title is-3">Method</h2>
+                        <div class="content has-text-justified section-copy">
+                            <p>3DGUT <span class="caption-citation">[<a data-cite="wu20253dgut" href="https://research.nvidia.com/labs/toronto-ai/3DGUT/" target="_blank" rel="noopener noreferrer" aria-label="3DGUT project website, reference 31">31</a>]</span> has two wide-angle rasterization failures: <strong>(a)</strong> it crops the field of view (FoV) to 160&deg; and sorts by optical-axis depth, which reverses beyond 90&deg;, and <strong>(b)</strong> it approximates tile coverage with projected sigma points even though rendering uses the exact ray response. Together, they produce the cutoff ring and tile-shaped artifacts shown below.</p>
+                        </div>
+                        <figure class="method-figure method-figure--panels">
+                            <div class="method-panels">
+                                <div class="method-panel-row" style="--ar: 2.9122">
+                                    <div class="method-panel" style="--ar: 1.7227">
+                                        <picture>
+                                            <source type="image/webp" srcset="./static/images/method-panel-a-zoom.webp?v=2026.10.21.1 1229w"
+                                                sizes="(min-width: 1024px) 240px, 45vw">
+                                            <img class="paper-figure" src="./static/images/method-panel-a.png?v=2026.10.21.1"
+                                                width="615" height="357" alt="Side view of a 200-degree fisheye ray fan: 3DGUT keeps rays within 80 degrees of the optical axis, cuts those between 80 and 90 degrees, and culls rays past 90 degrees for negative depth"
+                                                loading="lazy" decoding="async" fetchpriority="low">
+                                        </picture>
+                                        <p class="method-panel-label"><strong>(a)</strong> Rays past 90&deg; have \(z<0\)</p>
+                                    </div>
+                                    <div class="method-panel" style="--ar: 1.1895">
+                                        <picture>
+                                            <source type="image/webp" srcset="./static/images/method-panel-b-zoom.webp?v=2026.10.21.1 728w"
+                                                sizes="(min-width: 1024px) 240px, 45vw">
+                                            <img class="paper-figure" src="./static/images/method-panel-b.png?v=2026.10.21.1"
+                                                width="364" height="306" alt="Tile grid where admission from the projected sigma-point extent misses hatched tiles that the Gaussian&rsquo;s ray support reaches"
+                                                loading="lazy" decoding="async" fetchpriority="low">
+                                        </picture>
+                                        <p class="method-panel-label"><strong>(b)</strong> Projected vs. ray support</p>
+                                    </div>
+                                </div>
+                                <div class="method-panel-row" style="--ar: 2.6667">
+                                    <div class="method-panel" style="--ar: 1.3333">
+                                        <picture>
+                                            <source type="image/webp" srcset="./static/images/method-panel-c-zoom.webp?v=2026.10.19.3 966w"
+                                                sizes="(min-width: 1024px) 240px, 45vw">
+                                            <img class="paper-figure" src="./static/images/method-panel-c.jpg?v=2026.10.19.3"
+                                                width="484" height="363" alt="3DGUT plus PPISP render with a cut-off, corrupted periphery"
+                                                loading="lazy" decoding="async" fetchpriority="low">
+                                        </picture>
+                                        <p class="method-panel-label"><strong>3DGUT + PPISP</strong> <span class="caption-citation">[<a data-cite="wu20253dgut" href="https://research.nvidia.com/labs/toronto-ai/3DGUT/" target="_blank" rel="noopener noreferrer" aria-label="3DGUT project website, reference 31">31</a>, <a data-cite="deutsch2026ppispphysicallyplausiblecompensationcontrol" href="https://arxiv.org/abs/2601.18336" target="_blank" rel="noopener noreferrer" aria-label="PPISP paper, reference 4">4</a>]</span></p>
+                                    </div>
+                                    <div class="method-panel" style="--ar: 1.3333">
+                                        <picture>
+                                            <source type="image/webp" srcset="./static/images/method-panel-d-zoom.webp?v=2026.10.19.3 966w"
+                                                sizes="(min-width: 1024px) 240px, 45vw">
+                                            <img class="paper-figure" src="./static/images/method-panel-d.jpg?v=2026.10.19.3"
+                                                width="484" height="363" alt="GOFish render of the same view, complete to the edge of the lens"
+                                                loading="lazy" decoding="async" fetchpriority="low">
+                                        </picture>
+                                        <p class="method-panel-label"><strong>GOFish (Ours)</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </figure>
+                        <div class="content has-text-justified section-copy">
+                            <p><strong>GOFish</strong> addresses these failures by letting calibration define the valid image domain. <strong>Complete admission</strong> draws every Gaussian reached by a valid ray, while sorting each pixel by ray distance preserves near-to-far compositing beyond 90&deg;. <strong>Calibrated densification</strong> measures gradients in image space, allowing one threshold to recover detail across the full FoV.</p>
+                        </div>
+                        <figure class="method-figure method-figure--filtering" style="max-width: 480px; margin: 0.5rem auto 1.25rem;">
+                            <picture>
+                                <source type="image/webp" srcset="./static/images/method-filtering-640.webp?v=2026.10.22.1 640w, ./static/images/method-filtering-zoom.webp?v=2026.10.22.1 1849w"
+                                    sizes="(min-width: 640px) 480px, calc(100vw - 48px)">
+                                <img class="paper-figure" src="./static/images/method-filtering.png?v=2026.10.22.1"
+                                    width="925" height="381" style="width: 100%; height: auto;"
+                                    alt="Calibrated Mip Filtering: training views set the stored 3D filter; rendering adds a per-view footprint, while meshing uses the stored covariance"
+                                    loading="lazy" decoding="async" fetchpriority="low">
+                            </picture>
+                        </figure>
+                        <div class="content has-text-justified section-copy">
+                            <p><strong>Calibrated Mip Filtering</strong> (above) uses the camera Jacobian to separate a view-independent scene filter from each view&rsquo;s pixel footprint. Applying that footprint only during rendering keeps view-specific blur out of the scene and mesh and keeps the densified scene compact. At inference, faster projected tile selection enables <strong>real-time rendering</strong>.</p>
+                        </div>
+                        <h3 class="title is-4 method-subtitle">Wide-Angle Appearance Modeling</h3>
+                        <div class="content has-text-justified section-copy">
+                            <p>Exposure, vignetting, and rim falloff belong to the camera rather than the 3D scene. GOFish&rsquo;s <strong>Wide-Angle Appearance Modeling</strong> extends PPISP <span class="caption-citation">[<a data-cite="deutsch2026ppispphysicallyplausiblecompensationcontrol" href="https://arxiv.org/abs/2601.18336" target="_blank" rel="noopener noreferrer" aria-label="PPISP paper, reference 4">4</a>]</span> with a per-camera attenuation that combines a monotone radial profile and low-resolution flat field to capture the steep rim falloff missed by its low-order vignetting. This prevents rim darkening from being baked into Gaussian colors and inherited by the mesh, <strong>improving FIORD PSNR by 3.17 dB over standard PPISP</strong>.</p>
+                        </div>
+                        <h3 class="title is-4 method-subtitle">Full Field-of-View Mesh Extraction</h3>
+                        <div class="content has-text-justified section-copy">
+                            <p>GOFish renders the same ray-maximum response used by Gaussian Opacity Fields (GOF) <span class="caption-citation">[<a data-cite="Yu2024GOF" href="https://niujinshuchong.github.io/gaussian-opacity-fields/" target="_blank" rel="noopener noreferrer" aria-label="Gaussian Opacity Fields project website, reference 37">37</a>]</span>, enabling direct <strong>opacity-field mesh extraction</strong> from the Gaussian scene. Full-FoV coverage ensures that points seen only by peripheral rays are evaluated rather than treated as unobserved. The optional <strong>Geometry Objective</strong> further improves mesh quality.</p>
+                        </div>
+                        <div class="method-video">
+                            <video data-inview-autoplay data-click-toggle muted loop playsinline preload="metadata"
+                                width="1280" height="640" tabindex="0" role="button" aria-pressed="false"
+                                poster="./static/images/fiord/Road_Out_render_mesh_poster.jpg?v=2026.10.19.31"
+                                aria-label="Play full field-of-view render and mesh video"
+                                title="Click to play or pause">
+                                <source src="./static/videos/Road_Out_gofish_render_mesh.av1.mp4?v=2026.10.19.31"
+                                    type='video/mp4; codecs="av01.0.08M.08"'>
+                                <source src="https://huggingface.co/datasets/AllenTu/GOFish-web/resolve/main/videos/h264/Road_Out_gofish_render_mesh.mp4"
+                                    type="video/mp4">
+                            </video>
+                            <span class="video-pill" aria-hidden="true">Full 200&deg; Field-of-View</span>
+                        </div>
+                        <div class="content has-text-justified section-copy">
+                            <p>Together, the Gaussian scene and aligned mesh form a <a href="#simulation-teaser" aria-label="Scroll to the simulation-ready digital twin teaser"><strong>simulation-ready digital twin</strong></a> with photorealistic full-FoV rendering, ray tracing, and collision geometry.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section results-section" id="results">
+            <div class="container results-comparison-container">
+                <div class="columns is-centered has-text-centered">
+                    <div class="column is-full-width">
+                        <h2 class="title is-3">Results</h2>
+                        <div class="fiord-comparison-module" id="fiord-comparison"
+                            data-video-root="./static/videos/" data-video-version="2026.10.20.1"
+                            data-h264-root="https://huggingface.co/datasets/AllenTu/GOFish-web/resolve/main/videos/h264/">
+                            <div class="fiord-viewer-layout">
+                                <div class="fiord-scene-rail">
+                                    <div class="fiord-dataset-picker" role="radiogroup"
+                                        aria-label="Select a results dataset">
+                                        <button class="fiord-dataset-button is-active" type="button" role="radio"
+                                            data-dataset="fiord" aria-checked="true">FIORD</button>
+                                        <button class="fiord-dataset-button" type="button" role="radio"
+                                            data-dataset="fullcircle" aria-checked="false">FullCircle</button>
+                                    </div>
+                                    <div class="fiord-scene-viewport">
+                                        <div class="fiord-scene-picker is-active" data-scene-dataset="fiord"
+                                            role="group" aria-label="Select a FIORD scene">
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fiord" data-scene="Building_In" aria-label="Show Building In" title="Building_In">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fiord/Building_In_gt-thumb.avif?v=2026.10.18.1">
+                                                    <source type="image/webp" srcset="./static/images/fiord/Building_In_gt-thumb.webp?v=2026.10.18.1">
+                                                    <img src="./static/images/fiord/Building_In_gt.png?v=2026.10.16.4"
+                                                        width="816" height="816" alt="Building In ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fiord" data-scene="Hall_In" aria-label="Show Hall In" title="Hall_In">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fiord/Hall_In_gt-thumb.avif?v=2026.10.18.1">
+                                                    <source type="image/webp" srcset="./static/images/fiord/Hall_In_gt-thumb.webp?v=2026.10.18.1">
+                                                    <img src="./static/images/fiord/Hall_In_gt.png?v=2026.10.16.4"
+                                                        width="816" height="816" alt="Hall In ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fiord" data-scene="MeetingRoom_In" aria-label="Show Meeting Room In" title="MeetingRoom_In">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fiord/MeetingRoom_In_gt-thumb.avif?v=2026.10.18.1">
+                                                    <source type="image/webp" srcset="./static/images/fiord/MeetingRoom_In_gt-thumb.webp?v=2026.10.18.1">
+                                                    <img src="./static/images/fiord/MeetingRoom_In_gt.png?v=2026.10.16.4"
+                                                        width="816" height="816" alt="Meeting Room In ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fiord" data-scene="Corridor_Out" aria-label="Show Corridor Out" title="Corridor_Out">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fiord/Corridor_Out_gt-thumb.avif?v=2026.10.19.20">
+                                                    <source type="image/webp" srcset="./static/images/fiord/Corridor_Out_gt-thumb.webp?v=2026.10.19.20">
+                                                    <img src="./static/images/fiord/Corridor_Out_gt.png?v=2026.10.19.20"
+                                                        width="816" height="816" alt="Corridor Out ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fiord" data-scene="Kitchen_In" aria-label="Show Kitchen In" title="Kitchen_In">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fiord/Kitchen_In_gt-thumb.avif?v=2026.10.18.1">
+                                                    <source type="image/webp" srcset="./static/images/fiord/Kitchen_In_gt-thumb.webp?v=2026.10.18.1">
+                                                    <img src="./static/images/fiord/Kitchen_In_gt.png?v=2026.10.16.4"
+                                                        width="816" height="816" alt="Kitchen In ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fiord" data-scene="Road_Out" aria-label="Show Road Out" title="Road_Out">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fiord/Road_Out_gt-thumb.avif?v=2026.10.18.1">
+                                                    <source type="image/webp" srcset="./static/images/fiord/Road_Out_gt-thumb.webp?v=2026.10.18.1">
+                                                    <img src="./static/images/fiord/Road_Out_gt.png?v=2026.10.16.4"
+                                                        width="816" height="816" alt="Road Out ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fiord" data-scene="Bridge_Out" aria-label="Show Bridge Out" title="Bridge_Out">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fiord/Bridge_Out_gt-thumb.avif?v=2026.10.19.20">
+                                                    <source type="image/webp" srcset="./static/images/fiord/Bridge_Out_gt-thumb.webp?v=2026.10.19.20">
+                                                    <img src="./static/images/fiord/Bridge_Out_gt.png?v=2026.10.19.20"
+                                                        width="816" height="816" alt="Bridge Out ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                        </div>
+                                        <div class="fiord-scene-picker" data-scene-dataset="fullcircle"
+                                            role="group" aria-label="Select a FullCircle scene" aria-hidden="true">
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fullcircle" data-scene="FullCircle_lab" aria-label="Show FullCircle Lab" title="lab">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fullcircle/FullCircle_lab_gt-thumb.avif?v=2026.10.18.1">
+                                                    <source type="image/webp" srcset="./static/images/fullcircle/FullCircle_lab_gt-thumb.webp?v=2026.10.18.1">
+                                                    <img src="./static/images/fullcircle/FullCircle_lab_gt.jpg?v=2026.10.18.1"
+                                                        width="816" height="816" alt="FullCircle Lab ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fullcircle" data-scene="FullCircle_flat2" aria-label="Show FullCircle Flat 2" title="flat2">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fullcircle/FullCircle_flat2_gt-thumb.avif?v=2026.10.18.1">
+                                                    <source type="image/webp" srcset="./static/images/fullcircle/FullCircle_flat2_gt-thumb.webp?v=2026.10.18.1">
+                                                    <img src="./static/images/fullcircle/FullCircle_flat2_gt.jpg?v=2026.10.18.1"
+                                                        width="816" height="816" alt="FullCircle Flat 2 ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fullcircle" data-scene="FullCircle_room2" aria-label="Show FullCircle Room 2" title="room2">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fullcircle/FullCircle_room2_gt-thumb.avif?v=2026.10.18.1">
+                                                    <source type="image/webp" srcset="./static/images/fullcircle/FullCircle_room2_gt-thumb.webp?v=2026.10.18.1">
+                                                    <img src="./static/images/fullcircle/FullCircle_room2_gt.jpg?v=2026.10.18.1"
+                                                        width="816" height="816" alt="FullCircle Room 2 ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fullcircle" data-scene="FullCircle_room3" aria-label="Show FullCircle Room 3" title="room3">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fullcircle/FullCircle_room3_gt-thumb.avif?v=2026.10.18.1">
+                                                    <source type="image/webp" srcset="./static/images/fullcircle/FullCircle_room3_gt-thumb.webp?v=2026.10.18.1">
+                                                    <img src="./static/images/fullcircle/FullCircle_room3_gt.jpg?v=2026.10.18.1"
+                                                        width="816" height="816" alt="FullCircle Room 3 ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fullcircle" data-scene="FullCircle_flat1" aria-label="Show FullCircle Flat 1" title="flat1">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fullcircle/FullCircle_flat1_gt-thumb.avif?v=2026.10.18.1">
+                                                    <source type="image/webp" srcset="./static/images/fullcircle/FullCircle_flat1_gt-thumb.webp?v=2026.10.18.1">
+                                                    <img src="./static/images/fullcircle/FullCircle_flat1_gt.jpg?v=2026.10.18.1"
+                                                        width="816" height="816" alt="FullCircle Flat 1 ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fullcircle" data-scene="FullCircle_dark" aria-label="Show FullCircle Dark" title="dark">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fullcircle/FullCircle_dark_gt-thumb.avif?v=2026.10.18.1">
+                                                    <source type="image/webp" srcset="./static/images/fullcircle/FullCircle_dark_gt-thumb.webp?v=2026.10.18.1">
+                                                    <img src="./static/images/fullcircle/FullCircle_dark_gt.jpg?v=2026.10.18.1"
+                                                        width="816" height="816" alt="FullCircle Dark ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fullcircle" data-scene="FullCircle_room1" aria-label="Show FullCircle Room 1" title="room1">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fullcircle/FullCircle_room1_gt-thumb.avif?v=2026.10.18.1">
+                                                    <source type="image/webp" srcset="./static/images/fullcircle/FullCircle_room1_gt-thumb.webp?v=2026.10.18.1">
+                                                    <img src="./static/images/fullcircle/FullCircle_room1_gt.jpg?v=2026.10.18.1"
+                                                        width="816" height="816" alt="FullCircle Room 1 ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fullcircle" data-scene="FullCircle_lounge" aria-label="Show FullCircle Lounge" title="lounge">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fullcircle/FullCircle_lounge_gt-thumb.avif?v=2026.10.18.1">
+                                                    <source type="image/webp" srcset="./static/images/fullcircle/FullCircle_lounge_gt-thumb.webp?v=2026.10.18.1">
+                                                    <img src="./static/images/fullcircle/FullCircle_lounge_gt.jpg?v=2026.10.18.1"
+                                                        width="816" height="816" alt="FullCircle Lounge ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                            <button class="fiord-scene-button" type="button"
+                                                data-dataset="fullcircle" data-scene="FullCircle_persons" aria-label="Show FullCircle Persons" title="persons">
+                                                <picture>
+                                                    <source type="image/avif" srcset="./static/images/fullcircle/FullCircle_persons_gt-thumb.avif?v=2026.10.18.1">
+                                                    <source type="image/webp" srcset="./static/images/fullcircle/FullCircle_persons_gt-thumb.webp?v=2026.10.18.1">
+                                                    <img src="./static/images/fullcircle/FullCircle_persons_gt.jpg?v=2026.10.18.1"
+                                                        width="816" height="816" alt="FullCircle Persons ground truth" loading="lazy">
+                                                </picture>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="fiord-comparison-main">
+                                    <div class="gofish-compare-container">
+                                        <video data-comparison-role="gofish-render" muted loop playsinline
+                                            preload="auto" aria-hidden="true"></video>
+                                        <video data-comparison-role="gofish-mesh" muted loop playsinline
+                                            preload="auto" aria-hidden="true"></video>
+                                        <video data-comparison-role="baseline-render" muted loop playsinline
+                                            preload="auto" aria-hidden="true"></video>
+                                        <video data-comparison-role="baseline-mesh" muted loop playsinline
+                                            preload="auto" aria-hidden="true"></video>
+                                        <canvas class="gofish-comparison-canvas" width="898" height="816"
+                                            tabindex="0" role="slider"
+                                            aria-label="Interactive four-way video comparison; move the pointer to position the dividers"
+                                            aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"
+                                            aria-valuetext="Vertical and horizontal dividers at 50 percent"></canvas>
+                                        <div class="gofish-comparison-loading" aria-hidden="true">Loading comparison&hellip;</div>
+                                    </div>
+                                    <p class="fiord-comparison-status fiord-sr-only" aria-live="polite"></p>
+
+                                    <div class="fiord-baseline-picker">
+                                        <div class="fiord-baseline-options" role="radiogroup"
+                                            aria-label="Select a baseline method">
+                                            <div class="fiord-baseline-row" role="group"
+                                                aria-label="Render-only baselines">
+                                                <button type="button" role="radio" aria-checked="false"
+                                                    data-method="fisheye_gs">Fisheye-GS</button>
+                                                <button type="button" role="radio" aria-checked="true"
+                                                    data-method="3dgut_ppisp">3DGUT + PPISP</button>
+                                                <button type="button" role="radio" aria-checked="false"
+                                                    data-method="3dgeer">3DGEER</button>
+                                                <button type="button" role="radio" aria-checked="false"
+                                                    data-method="directfisheye_gs">DirectFisheye-GS</button>
+                                                <button type="button" role="radio" aria-checked="false"
+                                                    data-method="3dgrt_ppisp">3DGRT + PPISP</button>
+                                            </div>
+                                            <div class="fiord-baseline-row" role="group"
+                                                aria-label="Render and mesh baselines">
+                                                <button type="button" role="radio" aria-checked="false"
+                                                    data-method="gof">GOF</button>
+                                                <button type="button" role="radio" aria-checked="false"
+                                                    data-method="pgsr">PGSR</button>
+                                                <button type="button" role="radio" aria-checked="false"
+                                                    data-method="sof">SOF</button>
+                                                <button type="button" role="radio" aria-checked="false"
+                                                    data-method="milo">MiLo</button>
+                                                <button type="button" role="radio" aria-checked="false"
+                                                    data-method="come">CoMe</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="fiord-comparison-caption"><strong>Results on FIORD
+                                    <span class="caption-citation">[<a data-cite="gunes2025fiord"
+                                            href="https://parmisian.github.io/fiord360.github.io/" target="_blank"
+                                            rel="noopener noreferrer"
+                                            aria-label="FIORD project website, reference 8">8</a>]</span> and FullCircle
+                                    <span class="caption-citation">[<a data-cite="foroutan2026fullcircle"
+                                            href="https://arxiv.org/abs/2603.22572" target="_blank"
+                                            rel="noopener noreferrer"
+                                            aria-label="FullCircle paper, reference 5">5</a>]</span>.</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container results-carousel-container">
+                <div class="slideshow slideshow-unibrep" tabindex="0" data-autoplay="8000"
+                    aria-label="GOFish qualitative results on ScanNet++ and Tanks and Temples">
+                    <div class="slideshow-viewport">
+                        <div class="slideshow-track">
+                            <div class="slideshow-slide">
+                                <picture data-carousel-zoom data-zoom-src="./static/images/carousel/slide-scannetpp-render-surface-zoom.webp?v=2026.10.19.2" role="button" tabindex="0"
+                                    aria-label="Toggle 4x zoom for ScanNet++ rendering, surface reconstruction methods" aria-pressed="false">
+                                    <source media="(max-width: 768px)" type="image/webp"
+                                        srcset="./static/images/carousel/slide-scannetpp-render-surface-zoom.webp?v=2026.10.19.2">
+                                    <source type="image/webp"
+                                        srcset="./static/images/carousel/slide-scannetpp-render-surface-640.webp?v=2026.10.19.2 640w, ./static/images/carousel/slide-scannetpp-render-surface-960.webp?v=2026.10.19.2 960w, ./static/images/carousel/slide-scannetpp-render-surface-1920.webp?v=2026.10.19.2 1920w"
+                                        sizes="(min-width: 1408px) 980px, (min-width: 769px) 78vw, calc(100vw - 48px)">
+                                    <img src="./static/images/carousel/slide-scannetpp-render-surface.jpg?v=2026.10.19.2"
+                                        width="2101" height="1573"
+                                        alt="Held-out ScanNet++ renderings by GOF, PGSR, SOF, MiLo, CoMe, and GOFish on six scenes, with ground truth"
+                                        loading="lazy" decoding="async" fetchpriority="low">
+                                </picture>
+                                <p class="slide-caption"><strong>Qualitative rendering results on ScanNet++
+                                    <span class="caption-citation">[<a data-cite="yeshwanth2023scannet++"
+                                            href="https://scannetpp.mlsg.cit.tum.de/scannetpp/" target="_blank"
+                                            rel="noopener noreferrer"
+                                            aria-label="ScanNet++ project website, reference 34">34</a>]</span>.</strong></p>
+                            </div>
+                            <div class="slideshow-slide">
+                                <picture data-carousel-zoom data-zoom-src="./static/images/carousel/slide-scannetpp-mesh-surface-zoom.webp?v=2026.10.19.2" role="button" tabindex="0"
+                                    aria-label="Toggle 4x zoom for ScanNet++ mesh, surface reconstruction methods" aria-pressed="false">
+                                    <source media="(max-width: 768px)" type="image/webp"
+                                        srcset="./static/images/carousel/slide-scannetpp-mesh-surface-zoom.webp?v=2026.10.19.2">
+                                    <source type="image/webp"
+                                        srcset="./static/images/carousel/slide-scannetpp-mesh-surface-640.webp?v=2026.10.19.2 640w, ./static/images/carousel/slide-scannetpp-mesh-surface-960.webp?v=2026.10.19.2 960w, ./static/images/carousel/slide-scannetpp-mesh-surface-1920.webp?v=2026.10.19.2 1920w"
+                                        sizes="(min-width: 1408px) 980px, (min-width: 769px) 78vw, calc(100vw - 48px)">
+                                    <img src="./static/images/carousel/slide-scannetpp-mesh-surface.jpg?v=2026.10.19.2"
+                                        width="2101" height="1573"
+                                        alt="ScanNet++ mesh normals by GOF, PGSR, SOF, MiLo, CoMe, and GOFish on six scenes, with ground-truth images"
+                                        loading="lazy" decoding="async" fetchpriority="low">
+                                </picture>
+                                <p class="slide-caption"><strong>Qualitative mesh results on ScanNet++
+                                    <span class="caption-citation">[<a data-cite="yeshwanth2023scannet++"
+                                            href="https://scannetpp.mlsg.cit.tum.de/scannetpp/" target="_blank"
+                                            rel="noopener noreferrer"
+                                            aria-label="ScanNet++ project website, reference 34">34</a>]</span>.</strong></p>
+                            </div>
+                            <div class="slideshow-slide">
+                                <picture data-carousel-zoom data-zoom-src="./static/images/carousel/slide-tnt-render-surface-zoom.webp?v=2026.10.19.2" role="button" tabindex="0"
+                                    aria-label="Toggle 4x zoom for Tanks and Temples rendering, surface reconstruction methods" aria-pressed="false">
+                                    <source media="(max-width: 768px)" type="image/webp"
+                                        srcset="./static/images/carousel/slide-tnt-render-surface-zoom.webp?v=2026.10.19.2">
+                                    <source type="image/webp"
+                                        srcset="./static/images/carousel/slide-tnt-render-surface-640.webp?v=2026.10.19.2 640w, ./static/images/carousel/slide-tnt-render-surface-960.webp?v=2026.10.19.2 960w, ./static/images/carousel/slide-tnt-render-surface-1920.webp?v=2026.10.19.2 1920w"
+                                        sizes="(min-width: 1408px) 980px, (min-width: 769px) 78vw, calc(100vw - 48px)">
+                                    <img src="./static/images/carousel/slide-tnt-render-surface.jpg?v=2026.10.19.2"
+                                        width="2101" height="1392"
+                                        alt="Held-out Tanks and Temples renderings by GOF, PGSR, SOF, MiLo, CoMe, and GOFish on six scenes, with ground truth"
+                                        loading="lazy" decoding="async" fetchpriority="low">
+                                </picture>
+                                <p class="slide-caption"><strong>Qualitative rendering results on Tanks &amp; Temples
+                                    <span class="caption-citation">[<a data-cite="Knapitsch2017tanks" href="https://www.tanksandtemples.org/"
+                                            target="_blank" rel="noopener noreferrer"
+                                            aria-label="Tanks and Temples project website, reference 18">18</a>]</span>.</strong></p>
+                            </div>
+                            <div class="slideshow-slide">
+                                <picture data-carousel-zoom data-zoom-src="./static/images/carousel/slide-tnt-mesh-surface-zoom.webp?v=2026.10.19.2" role="button" tabindex="0"
+                                    aria-label="Toggle 4x zoom for Tanks and Temples mesh, surface reconstruction methods" aria-pressed="false">
+                                    <source media="(max-width: 768px)" type="image/webp"
+                                        srcset="./static/images/carousel/slide-tnt-mesh-surface-zoom.webp?v=2026.10.19.2">
+                                    <source type="image/webp"
+                                        srcset="./static/images/carousel/slide-tnt-mesh-surface-640.webp?v=2026.10.19.2 640w, ./static/images/carousel/slide-tnt-mesh-surface-960.webp?v=2026.10.19.2 960w, ./static/images/carousel/slide-tnt-mesh-surface-1920.webp?v=2026.10.19.2 1920w"
+                                        sizes="(min-width: 1408px) 980px, (min-width: 769px) 78vw, calc(100vw - 48px)">
+                                    <img src="./static/images/carousel/slide-tnt-mesh-surface.jpg?v=2026.10.19.2"
+                                        width="2101" height="1392"
+                                        alt="Tanks and Temples mesh normals by GOF, PGSR, SOF, MiLo, CoMe, and GOFish on six scenes, with ground-truth images"
+                                        loading="lazy" decoding="async" fetchpriority="low">
+                                </picture>
+                                <p class="slide-caption"><strong>Qualitative mesh results on Tanks &amp; Temples
+                                    <span class="caption-citation">[<a data-cite="Knapitsch2017tanks" href="https://www.tanksandtemples.org/"
+                                            target="_blank" rel="noopener noreferrer"
+                                            aria-label="Tanks and Temples project website, reference 18">18</a>]</span>.</strong></p>
+                            </div>
+                            <div class="slideshow-slide">
+                                <picture data-carousel-zoom data-zoom-src="./static/images/carousel/slide-scannetpp-render-wide-zoom.webp?v=2026.10.20.1" role="button" tabindex="0"
+                                    aria-label="Toggle 4x zoom for ScanNet++ rendering, wide-angle methods" aria-pressed="false">
+                                    <source media="(max-width: 768px)" type="image/webp"
+                                        srcset="./static/images/carousel/slide-scannetpp-render-wide-zoom.webp?v=2026.10.20.1">
+                                    <source type="image/webp"
+                                        srcset="./static/images/carousel/slide-scannetpp-render-wide-640.webp?v=2026.10.20.1 640w, ./static/images/carousel/slide-scannetpp-render-wide-960.webp?v=2026.10.20.1 960w, ./static/images/carousel/slide-scannetpp-render-wide-1920.webp?v=2026.10.20.1 1920w"
+                                        sizes="(min-width: 1408px) 980px, (min-width: 769px) 78vw, calc(100vw - 48px)">
+                                    <img src="./static/images/carousel/slide-scannetpp-render-wide.jpg?v=2026.10.20.1"
+                                        width="2101" height="1524"
+                                        alt="Held-out ScanNet++ renderings by Fisheye-GS, 3DGUT plus PPISP, 3DGEER, Self-Calibrating GS, DirectFisheye-GS, and GOFish on six scenes, with ground truth"
+                                        loading="lazy" decoding="async" fetchpriority="low">
+                                </picture>
+                                <p class="slide-caption"><strong>Qualitative rendering results on ScanNet++
+                                    <span class="caption-citation">[<a data-cite="yeshwanth2023scannet++"
+                                            href="https://scannetpp.mlsg.cit.tum.de/scannetpp/" target="_blank"
+                                            rel="noopener noreferrer"
+                                            aria-label="ScanNet++ project website, reference 34">34</a>]</span>.</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slideshow-controls">
+                        <button type="button" class="slideshow-prev" aria-label="Previous result">
+                            <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false">
+                                <path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7" />
+                            </svg>
+                        </button>
+                        <button type="button" class="slideshow-next" aria-label="Next result">
+                            <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false">
+                                <path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="slideshow-status" aria-live="polite"></div>
+                </div>
+            </div>
+
+            <div class="container is-max-desktop results-tables" role="group"
+                aria-label="GOFish quantitative results">
+                <figure class="result-table">
+                    <figcaption><strong>Table 1. Quantitative comparison against wide-angle rendering baselines.</strong> The <span class="rank-key rank-first">best</span>, <span class="rank-key rank-second">second best</span>, and <span class="rank-key rank-third">third best</span> entries are highlighted.
+                        GOFish&rsquo;s gain at each baseline&rsquo;s FoV is <span class="rank-key rank-gain">highlighted</span>.</figcaption>
+                    <div class="table-scroll">
+                    <picture>
+                        <source media="(max-width: 768px)" type="image/webp"
+                            srcset="./static/images/carousel/table1-zoom.webp?v=2026.10.21.2">
+                        <source type="image/webp"
+                            srcset="./static/images/carousel/table1-640.webp?v=2026.10.21.2 640w, ./static/images/carousel/table1-960.webp?v=2026.10.21.2 960w, ./static/images/carousel/table1-1920.webp?v=2026.10.21.2 1920w"
+                            sizes="(min-width: 960px) 960px, calc(100vw - 48px)">
+                        <img src="./static/images/carousel/table1.png?v=2026.10.21.2"
+                            width="2117" height="592"
+                            alt="Table 1 rendering comparison on FIORD, FullCircle, and ScanNet++"
+                            loading="lazy" decoding="async" fetchpriority="low">
+                    </picture>
+                    </div>
+                </figure>
+                <figure class="result-table">
+                    <figcaption><strong>Table 2. Quantitative comparison against surface reconstruction baselines.</strong> The <span class="rank-key rank-first">best</span>, <span class="rank-key rank-second">second best</span>, and <span class="rank-key rank-third">third best</span> entries are highlighted.
+                        <em>Full</em> scores each calibrated aperture and <em>Common</em> the shared rectified images.</figcaption>
+                    <div class="table-scroll">
+                    <picture>
+                        <source media="(max-width: 768px)" type="image/webp"
+                            srcset="./static/images/carousel/table2-zoom.webp?v=2026.10.21.2">
+                        <source type="image/webp"
+                            srcset="./static/images/carousel/table2-640.webp?v=2026.10.21.2 640w, ./static/images/carousel/table2-960.webp?v=2026.10.21.2 960w, ./static/images/carousel/table2-1920.webp?v=2026.10.21.2 1920w"
+                            sizes="(min-width: 960px) 960px, calc(100vw - 48px)">
+                        <img src="./static/images/carousel/table2.png?v=2026.10.21.2"
+                            width="2117" height="557"
+                            alt="Table 2 comparison with surface reconstruction methods on FIORD and ScanNet++"
+                            loading="lazy" decoding="async" fetchpriority="low">
+                    </picture>
+                    </div>
+                </figure>
+            </div>
+        </section>
+
+        <section class="section" id="BibTeX">
+            <div class="container is-max-desktop content">
+                <h2 class="title is-3">BibTeX</h2>
+                <div class="bibtex-container">
+                    <button class="copy-code-btn" id="copy-btn" aria-label="Copy BibTeX to clipboard">
+                        <i class="fa fa-copy" aria-hidden="true"></i>
+                    </button>
+                    <pre><code id="bibtex-content">@misc{Tu2026GOFish,
+    author        = {Tu, Allen and Karumuri, Meher Gitika and Zhu, Shifan and Wang, Hailing and Lin, Yen-Liang and Held, David and Zwicker, Matthias and Goldstein, Tom},
+    title         = {{GOFish}: Full Field-of-View Gaussian Splatting and Mesh Extraction},
+    year          = {2026},
+    eprint        = {XXXX.XXXXX},
+    archivePrefix = {arXiv},
+    primaryClass  = {cs.CV},
+    url           = {https://arxiv.org/abs/XXXX.XXXXX}
+}</code></pre>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="content has-text-centered">
+                <span class="icon-link is-placeholder" aria-disabled="true"
+                    aria-label="Paper PDF coming soon">
+                    <i class="fas fa-file-pdf" aria-hidden="true"></i>
+                </span>
+                <span class="icon-link is-placeholder" aria-disabled="true" aria-label="arXiv page coming soon">
+                    <i class="ai ai-arxiv" aria-hidden="true"></i>
+                </span>
+                <a class="icon-link" href="https://github.com/tuallen/GOFish" target="_blank" rel="noopener noreferrer" aria-label="Code on GitHub">
+                    <i class="fab fa-github" aria-hidden="true"></i>
+                </a>
+                <a class="icon-link" href="https://huggingface.co/datasets/AllenTu/GOFish-scenes"
+                    target="_blank" rel="noopener noreferrer"
+                    aria-label="Download GOFish Gaussian scenes and meshes">
+                    <i class="fas fa-download" aria-hidden="true"></i>
+                </a>
+            </div>
+            <div class="columns is-centered">
+                <div class="column is-8 acknowledgments-column">
+                    <div class="content footer-acknowledgments">
+                        <p>
+                            This work was completed during an internship at
+                            <a href="https://www.amazon.science/" target="_blank" rel="noopener noreferrer">Amazon</a>. We thank
+                            <a href="https://ziyanglong.cn/" target="_blank" rel="noopener noreferrer">Ziyang Long</a>,
+                            <a href="https://meilongzhang.github.io/" target="_blank" rel="noopener noreferrer">Mellon M. Zhang</a>,
+                            <a href="https://scholar.google.com/citations?user=u_lYTIwAAAAJ" target="_blank" rel="noopener noreferrer">Chenqi Li</a>,
+                            <a href="https://sarosijbose.github.io/" target="_blank" rel="noopener noreferrer">Sarosij Bose</a>,
+                            <a href="https://vishu26.github.io/" target="_blank" rel="noopener noreferrer">Srikumar Sastry</a>,
+                            <a href="https://scholar.google.com/citations?user=5DJL154AAAAJ" target="_blank" rel="noopener noreferrer">Amin Kheradmand</a>,
+                            <a href="https://www.linkedin.com/in/davidwstafford" target="_blank" rel="noopener noreferrer">David Stafford</a>,
+                            <a href="https://www.linkedin.com/in/avatarye" target="_blank" rel="noopener noreferrer">Yongqing Ye</a>,
+                            <a href="https://www.linkedin.com/in/huixiangong" target="_blank" rel="noopener noreferrer">Huixian Gong</a>,
+                            <a href="https://yunhe20.github.io/" target="_blank" rel="noopener noreferrer">Yun He</a>,
+                            <a href="https://zpl99.github.io/" target="_blank" rel="noopener noreferrer">Zeping Liu</a>,
+                            <a href="https://oceanying.github.io" target="_blank" rel="noopener noreferrer">Haiyang Ying</a>,
+                            <a href="https://www.cs.umd.edu/~hanson/" target="_blank" rel="noopener noreferrer">Alex Hanson</a>,
+                            <a href="https://chengyuehuang511.github.io/" target="_blank" rel="noopener noreferrer">Chengyue Huang</a>, and
+                            <button type="button" class="acknowledgment-logo-trigger" data-logo-modal
+                                aria-haspopup="dialog">Chen Xu</button>
+                            for helpful discussions and feedback on this work.
+                        </p>
+                    </div>
+                    <div class="content has-text-centered colophon">
+                        <p>
+                            &copy; 2026 <a class="plain-link" href="https://www.amazon.science/"
+                                target="_blank" rel="noopener noreferrer">Amazon</a>
+                            <span class="colophon-marks">
+                                &middot;
+                                <button type="button" class="colophon-toggle" id="theme-toggle"
+                                    aria-label="Switch to dark mode" aria-pressed="false">
+                                    <span class="theme-icon-wrap">
+                                        <i class="fas fa-sun theme-icon theme-icon-sun" aria-hidden="true"></i>
+                                        <i class="fas fa-moon theme-icon theme-icon-moon" aria-hidden="true"></i>
+                                    </span>
+                                </button>
+                                &middot;
+                                <a href="https://github.com/3dgofish/3dgofish.github.io" target="_blank"
+                                    rel="noopener noreferrer" aria-label="Website source code">
+                                    <i class="fas fa-code" aria-hidden="true"></i>
+                                </a>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

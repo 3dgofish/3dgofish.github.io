@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="73 73 878 878" role="img" aria-labelledby="title description">
+  <title id="title">GOFish logo</title>
+  <desc id="description">A three-card GOFish hand with a happy orange mesh fish and an exaggerated fisheye.</desc>
+  <defs>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fffdf5"/>
+      <stop offset="1" stop-color="#f6edd9"/>
+    </linearGradient>
+    <linearGradient id="fish" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe66d"/>
+      <stop offset="0.24" stop-color="#ffc43d"/>
+      <stop offset="0.5" stop-color="#ff9f1c"/>
+      <stop offset="0.68" stop-color="#ff7a18"/>
+      <stop offset="0.84" stop-color="#ff641f"/>
+      <stop offset="1" stop-color="#f4511e"/>
+    </linearGradient>
+    <linearGradient id="top-fin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe66d"/>
+      <stop offset="1" stop-color="#ffad24"/>
+    </linearGradient>
+    <linearGradient id="front-fin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff9f1c"/>
+      <stop offset="1" stop-color="#f4511e"/>
+    </linearGradient>
+    <radialGradient id="normal-light" cx="50%" cy="50%" r="68%">
+      <stop offset="0.42" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="0.72" stop-color="#000000" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.25"/>
+    </radialGradient>
+    <filter id="shadow" x="-30%" y="-25%" width="160%" height="165%">
+      <feDropShadow dx="0" dy="24" stdDeviation="24" flood-color="#071b2b" flood-opacity="0.28"/>
+    </filter>
+    <clipPath id="body-clip">
+      <path d="M704 453c-80-105-282-135-414-39-103 75-94 205 21 277 132 82 331 39 397-78l127 86-34-151 30-151-124 83c2-9 1-18-3-27z"/>
+    </clipPath>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <use href="#card-face" transform="translate(575.5 512) rotate(7) scale(0.82) translate(-512 -512)"/>
+    <use href="#card-face" transform="translate(512 500) scale(0.82) translate(-512 -512)"/>
+    <g transform="translate(448.5 512) rotate(-7) scale(0.82) translate(-512 -512)">
+    <g id="card-face">
+    <rect x="151" y="62" width="722" height="900" rx="82" fill="url(#card)" stroke="#000000" stroke-width="24"/>
+
+    <text x="512" y="347" fill="#000000" font-family="Arial, Helvetica, sans-serif"
+      font-size="340" font-weight="800" letter-spacing="-25" text-anchor="middle">GO</text>
+
+    <g transform="translate(512 642) scale(1.06) translate(-478 -530)">
+    <g transform="translate(320 0) scale(0.88 1) translate(-320 0)">
+    <!-- The dorsal fin is behind the body, so its attachment outline is hidden. -->
+    <path d="M474 373L626 270 558 390Z" fill="url(#top-fin)"
+      stroke="#1d112d" stroke-width="14" stroke-linejoin="round"/>
+
+    <g clip-path="url(#body-clip)">
+      <rect x="180" y="270" width="680" height="540" fill="url(#fish)"/>
+      <rect x="180" y="270" width="680" height="540" fill="url(#normal-light)"/>
+      <g fill="none" stroke="#1d112d" stroke-width="6" stroke-opacity="0.55" stroke-linejoin="round">
+        <path d="M266 405L488 366 708 480 708 613 567 704 319 707 290 590Z"/>
+        <path d="M500 545L266 405M500 545L488 366M500 545L708 480M500 545L708 613M500 545L567 704M500 545L319 707M500 545L290 590"/>
+        <path d="M708 480L801 548 708 613M801 548L831 397M801 548L835 699"/>
+      </g>
+    </g>
+
+    <path d="M704 453c-80-105-282-135-414-39-103 75-94 205 21 277 132 82 331 39 397-78l127 86-34-151 30-151-124 83c2-9 1-18-3-27z"
+      fill="none" stroke="#1d112d" stroke-width="15" stroke-linejoin="round"/>
+
+    <!-- The lower fin sits in front and has one clean attachment seam. -->
+    <path d="M500 704L650 790 570 682Z" fill="url(#front-fin)"
+      stroke="#1d112d" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <circle cx="334" cy="454" r="150" fill="#ffffff" stroke="#1d112d" stroke-width="19"/>
+    <circle cx="304" cy="467" r="63" fill="#1d112d"/>
+    <circle cx="282" cy="442" r="19" fill="#ffffff"/>
+    <path d="M286 618c28 37 76 38 107 3" fill="none" stroke="#1d112d" stroke-width="17" stroke-linecap="round"/>
+    </g>
+    </g>
+    </g>
+  </g>
+</svg>
