@@ -32,7 +32,7 @@ same terms. If you build on it, please credit Nerfies and this repository and pa
 
 ## Performance
 
-- **AV1-first video delivery.** Every published clip has a CRF-32 AV1 encode served by GitHub
+- **AV1-first video delivery.** Every published clip has a quality-targeted AV1 encode served by GitHub
   Pages. Browsers without AV1 support fall through to fast-start H.264 copies hosted in the
   public `AllenTu/GOFish-web` Hugging Face repository.
 - **Results loaded on demand.** The FIORD viewer does not assign its first four video sources

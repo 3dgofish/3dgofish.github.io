@@ -107,6 +107,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="//huggingface.co">
     <link rel="preload" href="./static/webfonts/noto-sans-latin.woff2?v=2026.10.13.4" as="font"
         type="font/woff2" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans&amp;display=swap"
@@ -230,7 +231,7 @@
                                 <source media="(max-width: 768px)"
                                     src="https://huggingface.co/datasets/AllenTu/GOFish-web/resolve/main/videos/h264/teaser-hall-in-3way-mobile.mp4"
                                     type="video/mp4">
-                                <source src="./static/videos/teaser-hall-in-3way.av1.mp4?v=2026.10.19.3"
+                                <source src="./static/videos/teaser-hall-in-3way.av1.mp4?v=2026.10.27.1"
                                     type='video/mp4; codecs="av01.0.08M.08"'>
                                 <source src="https://huggingface.co/datasets/AllenTu/GOFish-web/resolve/main/videos/h264/teaser-hall-in-3way.mp4"
                                     type="video/mp4">
@@ -365,7 +366,7 @@
                             <p>GOFish renders the same ray-maximum response used by Gaussian Opacity Fields (GOF) <span class="caption-citation">[<a data-cite="Yu2024GOF" href="https://niujinshuchong.github.io/gaussian-opacity-fields/" target="_blank" rel="noopener noreferrer" aria-label="Gaussian Opacity Fields project website, reference 37">37</a>]</span>, enabling direct <strong>opacity-field mesh extraction</strong> from the Gaussian scene. Full-FoV coverage ensures that points seen only by peripheral rays are evaluated rather than treated as unobserved. The optional <strong>Geometry Objective</strong> further improves mesh quality.</p>
                         </div>
                         <div class="method-video">
-                            <video data-inview-autoplay data-click-toggle muted loop playsinline preload="metadata"
+                            <video data-inview-autoplay data-click-toggle muted loop playsinline preload="none"
                                 width="1280" height="640" tabindex="0" role="button" aria-pressed="false"
                                 poster="./static/images/fiord/Road_Out_render_mesh_poster.jpg?v=2026.10.19.31"
                                 aria-label="Play full field-of-view render and mesh video"
