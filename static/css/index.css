@@ -168,6 +168,12 @@ body {
   display: inline-block;
 }
 
+@media screen and (max-width: 768px) {
+  .author-break {
+    display: none;
+  }
+}
+
 /* The "* denotes equal contribution" line, tucked under the author list. Bulma's
    .columns carries a bottom margin that left a visible gap between the two; this
    pulls it closed. Was an inline `margin-bottom: -5px`.
