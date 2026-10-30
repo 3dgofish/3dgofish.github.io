@@ -143,6 +143,20 @@ body {
   font-size: clamp(1.65rem, 5.2vw, 3rem);
 }
 
+.publication-title-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18em;
+  white-space: nowrap;
+  vertical-align: -0.16em;
+}
+
+.publication-title-logo {
+  width: 1.16em;
+  height: 1.16em;
+  flex: none;
+}
+
 .title-phrase {
   white-space: nowrap;
 }
