@@ -17,7 +17,7 @@
     <meta charset="utf-8">
     <meta name="google-site-verification" content="LpC3JCBuNA01WQaio40esb6J54mCXnN3VV7kC6VHMX0" />
     <meta name="description"
-        content="GOFish reconstructs simulation-ready 3D digital twins directly from fisheye imagery, combining photorealistic Gaussian Splatting over the camera's full field of view with an aligned mesh for collisions.">
+        content="GOFish reconstructs simulation-ready 3D digital twins directly from fisheye imagery, combining photorealistic Gaussian Splatting over the camera's full field of view with an aligned mesh for collision geometry.">
     <meta name="keywords"
         content="GOFish, Gaussian opacity fields, Gaussian Splatting, fisheye reconstruction, full field of view, wide-angle cameras, surface reconstruction, novel-view synthesis">
     <meta name="author"
@@ -50,7 +50,7 @@
 
     <meta property="og:title" content="GOFish: Full Field-of-View Gaussian Splatting and Mesh Extraction">
     <meta property="og:description"
-        content="GOFish reconstructs simulation-ready 3D digital twins directly from fisheye imagery, combining photorealistic Gaussian Splatting over the camera's full field of view with an aligned mesh for collisions.">
+        content="GOFish reconstructs simulation-ready 3D digital twins directly from fisheye imagery, combining photorealistic Gaussian Splatting over the camera's full field of view with an aligned mesh for collision geometry.">
     <meta property="og:url" content="https://3dgofish.github.io/">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="GOFish">
@@ -66,7 +66,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="GOFish: Full Field-of-View Gaussian Splatting and Mesh Extraction">
     <meta name="twitter:description"
-        content="GOFish reconstructs simulation-ready 3D digital twins directly from fisheye imagery, combining photorealistic Gaussian Splatting over the camera's full field of view with an aligned mesh for collisions.">
+        content="GOFish reconstructs simulation-ready 3D digital twins directly from fisheye imagery, combining photorealistic Gaussian Splatting over the camera's full field of view with an aligned mesh for collision geometry.">
     <meta name="twitter:url" content="https://3dgofish.github.io/">
     <meta name="twitter:domain" content="3dgofish.github.io">
     <meta name="twitter:image" content="https://3dgofish.github.io/static/images/teaser-card.jpg">
@@ -80,7 +80,7 @@
       "@id": "https://3dgofish.github.io/#article",
       "url": "https://3dgofish.github.io/",
       "headline": "GOFish: Full Field-of-View Gaussian Splatting and Mesh Extraction",
-      "description": "GOFish reconstructs simulation-ready 3D digital twins directly from fisheye imagery, combining photorealistic Gaussian Splatting over the camera's full field of view with an aligned mesh for collisions.",
+      "description": "GOFish reconstructs simulation-ready 3D digital twins directly from fisheye imagery, combining photorealistic Gaussian Splatting over the camera's full field of view with an aligned mesh for collision geometry.",
       "abstract": "Fisheye lenses capture a wide field of view in one frame, yet Gaussian Splatting rasterizers truncate FIORD's nominal 200° aperture, and surface methods rectify the periphery away. Wide-angle reconstruction must separate the stored scene from three per-view effects: missing rays, spatially varying pixel footprints, and rim falloff. Left unmodeled, they are absorbed into the scene and every mesh read from it, and neither full coverage nor geometry losses repair them. From this principle we derive GOFish, the first Gaussian Splatting method to rasterize and mesh a fisheye's full field of view. It conservatively admits every Gaussian whose renderer support, at most 3σ, meets a calibrated ray, applies each view's footprint at render time without storing it, densifies in calibrated image space, and absorbs the rim falloff. GOFish renders the full apertures of FIORD and FullCircle 2.3 and 2.0 dB above the best prior method, leads each released fisheye renderer even on its own field of view, and meshes FIORD with the best F-score of any surface method. The single scene renders in real time, can be ray traced, and carries a mesh for physics: a LiDAR-free, simulation-ready digital twin.",
       "author": [
         {"@type": "Person", "name": "Allen Tu", "url": "https://tuallen.github.io/", "affiliation": [{"@type": "Organization", "name": "Amazon"}, {"@type": "CollegeOrUniversity", "name": "University of Maryland, College Park", "url": "https://www.umiacs.umd.edu/"}]},
