@@ -32,7 +32,7 @@ from typing import Dict, List, Optional, Tuple
 # preload is wasted. Vendored bundles are left untouched.
 ASSET_EXTS = [
     "css", "js", "pdf", "bib",
-    "ico", "png", "svg", "webp", "jpg", "jpeg", "gif",
+    "ico", "png", "svg", "avif", "webp", "jpg", "jpeg", "gif",
     "mp4", "webm", "woff2",
 ]
 _EXT_ALT = "|".join(ASSET_EXTS)
@@ -44,7 +44,7 @@ _EXT_ALT = "|".join(ASSET_EXTS)
 # and data-src is the deferred source slideshow.js promotes to src when a slide
 # first becomes visible. Both are real asset references and need versioning too.
 HTML_ATTR_RE = re.compile(
-    r'(?P<attr>href|src|data-src|poster)="(?P<url>[^"]+?\.(?:' + _EXT_ALT + r'))'
+    r'(?P<attr>data-src|data-poster|href|src|poster)="(?P<url>[^"]+?\.(?:' + _EXT_ALT + r'))'
     r'(?:\?v=[^"]*)?"'
 )
 
@@ -208,6 +208,8 @@ class CacheBuster:
         if kind == "html":
             content = HTML_ATTR_RE.sub(sub_attr, content)
             content = HTML_SRCSET_RE.sub(sub_srcset, content)
+            # Inline comparison-poster backgrounds are real asset requests too.
+            content = CSS_URL_RE.sub(sub_css_url, content)
         elif kind == "css":
             content = CSS_URL_RE.sub(sub_css_url, content)
         elif kind == "js":

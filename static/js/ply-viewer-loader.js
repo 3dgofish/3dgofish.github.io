@@ -14,7 +14,7 @@
         const loadViewer = function (initialButton) {
             if (initialButton) requestedButton = initialButton;
             if (!viewerPromise) {
-                viewerPromise = import('./ply-viewer-single.js?v=2026.10.13.4')
+                viewerPromise = import('./ply-viewer-single.js?v=2026.10.30.1')
                     .then(function (module) {
                         return module.initPlyViewer(requestedButton);
                     })

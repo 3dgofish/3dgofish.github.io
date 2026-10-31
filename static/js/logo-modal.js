@@ -33,7 +33,7 @@
             '<div class="logo-modal-dialog">',
             '  <h2 class="logo-modal-title" id="logo-modal-title">GoLobster</h2>',
             '  <button type="button" class="logo-modal-close" aria-label="Close GoLobster">&times;</button>',
-            '  <img class="logo-modal-image" src="./static/images/golobster-logo-v6.svg?v=2026.10.21.7"',
+            '  <img class="logo-modal-image" src="./static/images/golobster-logo-v6.svg?v=2026.10.30.1"',
             '    alt="A three-card GoLobster icon with a cute red cartoon lobster, four large oval body segments, eight walking legs, an attached fan tail, small claws, and one oversized eye">',
             '</div>'
         ].join("\n");

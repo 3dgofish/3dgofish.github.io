@@ -273,7 +273,7 @@
                 gofishLogoReady = true;
                 paint();
             };
-            gofishLogo.src = "./static/images/gofish-logo.svg?v=2026.10.17.4";
+            gofishLogo.src = "./static/images/gofish-logo.svg?v=2026.10.30.1";
         }
         module.querySelectorAll("video[data-comparison-role]").forEach(function (video) {
             var role = video.dataset.comparisonRole;

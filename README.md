@@ -2,16 +2,16 @@
 
 Website source for [GOFish](https://3dgofish.github.io/).
 
-Built as plain HTML, CSS and JavaScript — no framework and no application build step, so what is
-in the repository is what the browser gets. The notes below cover the parts that are not obvious
-from reading the markup.
+Built as plain HTML, CSS and JavaScript with no runtime framework or deployment build step. The
+generated CSS and JavaScript bundles are checked in, so what is in the repository is what the
+browser gets. The notes below cover the parts that are not obvious from reading the markup.
 
 ---
 
 ## Credits
 
 **Template.** This site began as the academic paper template by the authors of
-**[Nerfies](https://github.com/nerfies/nerfies.github.io)**, through the UniBRep and SpeeDe3DGS
+**[Nerfies](https://github.com/nerfies/nerfies.github.io)**, through the SpeeDe3DGS and related
 project sites. The stylesheets, JavaScript and media pipeline have since been substantially
 rewritten, while the page architecture and publication class vocabulary retain that foundation.
 
@@ -62,13 +62,12 @@ same terms. If you build on it, please credit Nerfies and this repository and pa
 - **`cache_bust.py`.** One version query covers local assets in HTML attributes, inline poster
   backgrounds, stylesheet URLs and JavaScript-built video URLs.
 
-## Release SEO checklist
+## Publication and SEO metadata
 
-The page already publishes a canonical URL, crawl directives, XML sitemap, Open Graph and Twitter
-cards, Google Scholar citation metadata, and `ScholarlyArticle` JSON-LD. When the paper and code are
-public, replace the disabled arXiv/code/project buttons and add the real publication date, arXiv ID,
-and public repository/paper URLs to the citation metadata and JSON-LD `sameAs` list. These values are
-deliberately omitted until release rather than pointing crawlers at placeholders.
+The page publishes a canonical URL, crawl directives, XML sitemap, Open Graph and Twitter cards,
+Google Scholar citation metadata, and `ScholarlyArticle` JSON-LD. The publication date, arXiv ID,
+paper, code, project, and model URLs are live and should be kept in sync if the paper later gains a
+venue or DOI.
 
 ## Light and dark themes
 
@@ -97,7 +96,7 @@ deliberately omitted until release rather than pointing crawlers at placeholders
 ├── index.html
 ├── static/
 │   ├── css/                       # source styles + generated site.css bundle
-│   ├── files/                     # future paper and downloadable assets
+│   ├── files/                     # downloadable assets
 │   ├── images/
 │   │   ├── carousel/              # responsive and inspection result figures
 │   │   ├── fiord/                 # FIORD scene thumbnails and teaser posters
@@ -138,8 +137,8 @@ deliberately omitted until release rather than pointing crawlers at placeholders
   atomically, validates codec/dimensions/frame rate/duration, and supports concurrent jobs. Public
   deployment excludes the local H.264 masters and uses `AllenTu/GOFish-web` for those fallbacks.
 - **In-page PDF viewer** (`pdf-modal.js`)
-  When a paper link is enabled, it opens in a focus-trapped overlay. PDF.js is fetched only when
-  needed to choose the initial fit; the paper and arXiv links remain placeholders until release.
+  The paper PDF opens in a focus-trapped overlay. PDF.js is fetched only when needed to choose the
+  initial fit, while the arXiv abstract link opens normally.
 
 ## Related project websites
 
@@ -151,6 +150,11 @@ These paper pages share the same static foundation and media/build conventions:
 - **[SpeeDe3DGS](https://speede3dgs.github.io/)** — [source](https://github.com/speede3dgs/speede3dgs.github.io)
 - **[SplatSuRe](https://splatsure.github.io/)** — [source](https://github.com/splatsure/splatsure.github.io)
 - **[TransFIRA](https://transfira.github.io/)** — [source](https://github.com/transfira/transfira.github.io)
+
+My personal site, **[tuallen.github.io](https://tuallen.github.io/)**
+([source](https://github.com/tuallen/tuallen.github.io)), is a separate lineage — a different
+template, no Bulma, and its own component system — but it shares the carousel behaviour, theme
+toggle, cache-busting approach, and other web-delivery conventions used across these sites.
 
 ## Local development
 

@@ -122,8 +122,8 @@ function _getOrCreateOverlay() {
     <div class="pdf-toolbar">
       <div class="pdf-toolbar-left">
         <a href="#" onclick="closePDF(event)" class="pdf-logo-close" aria-label="Close">
-          <img src="./static/images/gofish-logo.svg?v=2026.10.17.4" alt="" class="logo-desktop" style="height:28px;width:auto;">
-          <img src="./static/images/gofish-logo.svg?v=2026.10.17.4" alt="" class="logo-mobile" style="height:30px;width:auto;">
+          <img src="./static/images/gofish-logo.svg?v=2026.10.30.1" alt="" class="logo-desktop" style="height:28px;width:auto;">
+          <img src="./static/images/gofish-logo.svg?v=2026.10.30.1" alt="" class="logo-mobile" style="height:30px;width:auto;">
         </a>
         <div class="pdf-title" id="pdfTitle"></div>
       </div>
